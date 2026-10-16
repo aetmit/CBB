@@ -1,2 +1,2 @@
-# crash-in
-A programming language inspired with gen Z terms
+# Crash in
+A programming language inspired by gen Z terms
