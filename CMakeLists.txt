@@ -9,11 +9,11 @@ add_executable(crash-in
     src/main.c
 )
 
-target_compile_options(brase PRIVATE
+target_compile_options(crash-in PRIVATE
     -Wall
     -Wextra
 )
 
-target_include_directories(brase PRIVATE
+target_include_directories(crash-in PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
