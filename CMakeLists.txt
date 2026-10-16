@@ -7,6 +7,8 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 
 add_executable(crash-in
     src/main.c
+
+    src/core/span.c
 )
 
 target_compile_options(crash-in PRIVATE
