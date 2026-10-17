@@ -20,6 +20,13 @@ struct Span {
     friend std::ostream &operator<<(std::ostream &os, const Span &span);
 };
 
+template<typename T>
+struct Spanned {
+    T node;
+    Span span;
+    Spanned(T node, Span span): node(node), span(span) {}
+};
+
 } // namespace core
 
 } // namespace cbb
