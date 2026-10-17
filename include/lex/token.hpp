@@ -1,6 +1,8 @@
 #ifndef CBB_LEX_TOKEN_HPP
 #define CBB_LEX_TOKEN_HPP
 
+#include <iostream>
+
 #include "core/types.hpp"
 #include "core/span.hpp"
 
@@ -22,6 +24,8 @@ enum class TokenType {
     Eof,
 };
 
+std::ostream &operator<<(std::ostream &os, const TokenType &type);
+
 struct Token {
     TokenType type;
     core::Span span;
@@ -29,6 +33,9 @@ struct Token {
     size_t line;
 
     Token(TokenType type, core::Span span, size_t column, size_t line);
+
+
+    friend std::ostream &operator<<(std::ostream &os, const Token &token);
 };
 
 } // namespace lexer 

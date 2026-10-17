@@ -12,7 +12,7 @@ public:
     explicit Lexer(const char *source);
     ~Lexer();
     Token next(); 
-
+    
 private:
     // non owning pointer into source string
     const char *source;
