@@ -8,6 +8,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_executable(cbb
     src/main.cpp
+
+    src/core/span.cpp
 )
 
 target_compile_options(cbb PRIVATE

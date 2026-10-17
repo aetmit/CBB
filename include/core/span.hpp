@@ -5,10 +5,16 @@
 
 namespace cbb {
 
+namespace core {
+
 struct Span {
     size_t offset;
     size_t length;
+
+    size_t end() const;
 };
+
+} // namespace core
 
 } // namespace cbb
 

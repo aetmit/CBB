@@ -4,8 +4,11 @@
 #include <cstdint>
 #include <cstddef>
 
+
+// these do not go into core:: because using core::u8 everytime we wanna use u8 is annoying
 namespace cbb {
 
+// do this because i dont wanna write std::size_t cuz its annoying
 using std::size_t;
 
 using u8 = std::uint8_t;
