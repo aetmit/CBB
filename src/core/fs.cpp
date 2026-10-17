@@ -18,7 +18,7 @@ FileReader::~FileReader() {
     }
 }
 
-const char *FileReader::readFile() {
+File FileReader::readFile() {
     std::fseek(file, 0, SEEK_END);
 
     long length = std::ftell(file);
@@ -31,7 +31,19 @@ const char *FileReader::readFile() {
 
     buffer[length] = '\0';
 
-    return buffer;
+    return File(buffer);
+}
+
+File::File(const char *contents): data(contents) {}
+
+File::~File() {
+    std::free(const_cast<void*>(static_cast<const void*>(data)));
+}
+
+File::File(): data(nullptr) {}
+
+const char *File::contents() const {
+    return data;
 }
 
 } // namespace core

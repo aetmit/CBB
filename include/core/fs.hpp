@@ -7,11 +7,22 @@ namespace cbb {
 
 namespace core {
 
+// manages contents for you
+class File {
+public:
+    File();
+    explicit File(const char *contents);
+    ~File();
+    const char *contents() const;
+private:
+    const char *data;
+};
+
 class FileReader {
 public:
     explicit FileReader(const char *path);
     ~FileReader();
-    const char *readFile();
+    File readFile();
 
 private:
     FILE *file;
