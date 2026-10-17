@@ -10,8 +10,8 @@ std::ostream &operator<<(std::ostream &os, const Token &token) {
 
     os << "Type: " << token.type << "\n";
     os << "Span: " << token.span << "\n";
-    os << "Column" << token.column << "\n";
-    os << "Line" << token.line << "\n";
+    os << "Column: " << token.column << "\n";
+    os << "Line: " << token.line << "\n";
     
     return os;
 }
