@@ -24,9 +24,6 @@ Lexer::~Lexer() {
 }
 
 Token Lexer::next() {
-    if (isAtEnd()) {
-        return Token(TokenType::Eof, Span(current, 0), column, line);
-    }
 
     skipWhitespace();
 
@@ -60,7 +57,7 @@ Token Lexer::next() {
             return newToken(TokenType::Slash);
         default:
             if (std::isdigit(static_cast<unsigned char>(c))) {
-                while (std::isdigit(static_cast<unsigned char>(peek()) && !isAtEnd())) {
+                while (!isAtEnd() && std::isdigit(static_cast<unsigned char>(peek()))) {
                     advance();
                 }
                 return newToken(TokenType::IntegerLiteral);

@@ -31,7 +31,7 @@ struct Token {
     core::Span span;
     size_t column;
     size_t line;
-
+    Token() = default;
     Token(TokenType type, core::Span span, size_t column, size_t line);
 
 

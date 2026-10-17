@@ -14,6 +14,7 @@ struct Span {
     size_t length;
 
     Span(size_t offset, size_t length);
+    Span() = default;
     size_t end() const;
 
     friend std::ostream &operator<<(std::ostream &os, const Span &span);

@@ -1,6 +1,7 @@
 #include "driver.hpp"
 
 #include "core/fs.hpp"
+#include "lex/lexer.hpp"
 
 namespace cbb {
 
@@ -14,6 +15,12 @@ int run(int argc, const char *argv[]) {
 
     FileReader reader(argv[1]);
     File file = reader.readFile();
+
+    lexer::Token token;
+    lexer::Lexer lexer(file.contents());
+    while ((token = lexer.next()).type != lexer::TokenType::Eof) {
+        std::cout << token << "\n";
+    }
 
     return 0;
 }
