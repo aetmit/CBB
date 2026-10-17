@@ -1,5 +1,5 @@
-#ifndef LEX_TOKEN_HPP
-#define LEX_TOKEN_HPP
+#ifndef CBB_LEX_TOKEN_HPP
+#define CBB_LEX_TOKEN_HPP
 
 #include "core/types.hpp"
 #include "core/span.hpp"
@@ -33,4 +33,4 @@ struct Token {
 
 } // namespace cbb
 
-#endif // LEX_TOKEN_HPP
+#endif // CBB_LEX_TOKEN_HPP

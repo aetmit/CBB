@@ -1,5 +1,5 @@
-#ifndef CORE_TYPES_HPP
-#define CORE_TYPES_HPP
+#ifndef CBB_CORE_TYPES_HPP
+#define CBB_CORE_TYPES_HPP
 
 #include <cstdint>
 #include <cstddef>
@@ -18,4 +18,4 @@ using u64 = std::uint64_t;
 
 } // namespace cbb
 
-#endif // CORE_TYPES_HPP
+#endif // CBB_CORE_TYPES_HPP

@@ -1,5 +1,5 @@
-#ifndef CORE_FS_HPP
-#define CORE_FS_HPP
+#ifndef CBB_CORE_FS_HPP
+#define CBB_CORE_FS_HPP
 
 #include <cstdio>
 
@@ -32,4 +32,4 @@ private:
 
 } // namespace cbb
 
-#endif // CORE_FS_HPP
+#endif // CBB_CORE_FS_HPP

@@ -1,5 +1,5 @@
-#ifndef LEX_LEXER_HPP
-#define LEX_LEXER_HPP
+#ifndef CBB_LEX_LEXER_HPP
+#define CBB_LEX_LEXER_HPP
 
 #include "lex/token.hpp"
 
@@ -28,4 +28,4 @@ private:
 
 } // namespace cbb
 
-#endif // LEX_LEXER_HPP
+#endif // CBB_LEX_LEXER_HPP

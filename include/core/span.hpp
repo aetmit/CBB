@@ -1,5 +1,5 @@
-#ifndef CORE_SPAN_HPP
-#define CORE_SPAN_HPP
+#ifndef CBB_CORE_SPAN_HPP
+#define CBB_CORE_SPAN_HPP
 
 #include "core/types.hpp"
 
@@ -18,4 +18,4 @@ struct Span {
 
 } // namespace cbb
 
-#endif // CORE_SPAN_HPP
+#endif // CBB_CORE_SPAN_HPP
