@@ -22,6 +22,13 @@ private:
     size_t column;
     size_t startColumn;
     size_t line;
+    size_t sourceLen;
+
+    bool isAtEnd() const;
+    void skipWhitespace();
+    char advance();
+    char peek() const;
+    Token newToken(TokenType type) const;
 };
 
 } // namespace lexer

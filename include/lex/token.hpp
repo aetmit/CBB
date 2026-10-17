@@ -27,6 +27,8 @@ struct Token {
     core::Span span;
     size_t column;
     size_t line;
+
+    Token(TokenType type, core::Span span, size_t column, size_t line);
 };
 
 } // namespace lexer 

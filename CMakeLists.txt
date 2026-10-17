@@ -14,6 +14,7 @@ add_executable(cbb
     src/core/fs.cpp
 
     src/lex/lexer.cpp
+    src/lex/token.cpp
 )
 
 target_compile_options(cbb PRIVATE

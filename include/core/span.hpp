@@ -11,6 +11,7 @@ struct Span {
     size_t offset;
     size_t length;
 
+    Span(size_t offset, size_t length);
     size_t end() const;
 };
 
