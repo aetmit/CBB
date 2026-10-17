@@ -8,9 +8,12 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_executable(cbb
     src/main.cpp
+    src/driver.cpp
 
     src/core/span.cpp
     src/core/fs.cpp
+
+    src/lex/lexer.cpp
 )
 
 target_compile_options(cbb PRIVATE
