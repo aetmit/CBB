@@ -2,6 +2,7 @@
 
 #include <cerrno>
 #include <cstdlib>
+#include <cstring>
 
 #include "core/error.hpp"
 
@@ -115,6 +116,21 @@ Expr *Parser::parsePrimary() {
         Span closeSpan = advance().span;
         expr->span = expr->span.join(startSpan.join(closeSpan));
 
+        return expr;
+    } else {
+        Span span = peek().span;
+        char *lexeme = span.retrieve_source(source);
+        const char *msg = "unexpeced token: ";
+        size_t msgLen = std::strlen(msg);
+        size_t lexemeLen = std::strlen(lexeme);
+        size_t len = msgLen + lexemeLen + 1;
+        char *buff = new char[len];
+        std::memcpy(buff, msg, msgLen);
+        std::memcpy(buff, lexeme, lexemeLen);
+        buff[len] = '\0';
+        error(buff, true, span);
+
+        Expr *expr = arena->make<Expr>(nextNodeId(), span);
         return expr;
     }
 }
