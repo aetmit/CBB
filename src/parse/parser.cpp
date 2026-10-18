@@ -68,7 +68,29 @@ Expr *Parser::parseExpression() {
 }
 
 Expr *Parser::parseTerm() {
-    return parseFactor();
+    Expr *left = parseFactor();
+    Span startSpan = left->span;
+    while (peek().type == TokenType::Plus || peek().type == TokenType::Minus) {
+        Token tokOp = advance();
+        
+        Expr *right = parseFactor();
+
+        BinaryOpKind opKind;
+        if (tokOp.type == TokenType::Plus) {
+            opKind = BinaryOpKind::Add;
+        } else {
+            opKind = BinaryOpKind::Sub;
+        }
+
+        BinOp op(opKind, tokOp.span);
+
+        BinaryOperator binop{ .left = left, .right = right, .op = op };
+
+        Expr *expr = arena->make<Expr>(nextNodeId(), startSpan.join(right->span), binop);
+        left = expr;
+    }
+
+    return left;
 }
 
 Expr *Parser::parseFactor() {
