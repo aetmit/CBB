@@ -99,6 +99,23 @@ Expr *Parser::parsePrimary() {
         Literal literal(value);
         Expr *expr = arena->make<Expr>(nextNodeId(), tok.span, literal);
         return expr;
+    } else if (peek().type == TokenType::OpenParen) {
+        Span startSpan = advance().span;
+
+        Expr *expr = parseExpression();
+
+        if (peek().type != TokenType::CloseParen) {
+            Span span = advance().span;
+            error("expected ')' after expression", false, span);
+
+            Expr *expr = arena->make<Expr>(nextNodeId(), span);
+            return expr;
+        }
+
+        Span closeSpan = advance().span;
+        expr->span = expr->span.join(startSpan.join(closeSpan));
+
+        return expr;
     }
 }
 

@@ -79,6 +79,8 @@ struct Expr {
     Expr(NodeId id, core::Span span, BinaryOperator binop);
     Expr(NodeId id, core::Span span, UnaryOperator unaryop);
     Expr(NodeId id, core::Span span, Literal literal);
+    // for error node
+    Expr(NodeId id, core::Span span);
 };
 
 struct Program {

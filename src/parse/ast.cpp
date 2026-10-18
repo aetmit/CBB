@@ -14,6 +14,8 @@ Expr::Expr(NodeId id, core::Span span, UnaryOperator unaryop): type(ExprType::Un
 
 Expr::Expr(NodeId id, core::Span span, Literal literal): type(ExprType::Literal), id(id), span(span), as{ .literal = literal } {}
 
+Expr::Expr(NodeId id, core::Span span): type(ExprType::Error), id(id), span(span), as{} {}
+
 } // namespace parser
 
 } // namespace cbb

@@ -1,6 +1,9 @@
 #include "core/span.hpp"
 
+#include <algorithm>
 #include <cstring>
+
+#include "core/types.hpp"
 
 namespace cbb {
 
@@ -22,6 +25,13 @@ char *Span::retrieve_source(const char *source) const {
     std::memcpy(buffer, source + offset, length);
     buffer[length] = '\0';
     return buffer;
+}
+
+Span Span::join(Span other) const {
+    size_t offset = std::min(this->offset, other.offset);
+    size_t end = std::max(this->end(), other.end());
+    size_t length = offset - end;
+    return Span(offset, length);
 }
 
 } // namespace core 
