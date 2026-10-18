@@ -20,7 +20,12 @@ void Arena::reset() {
     }
 
     destructors.clear();
-    resource.release();
+
+    if (resource) {
+        resource.reset(); 
+    }
+
+    resource = std::make_unique<std::pmr::monotonic_buffer_resource>();
 }
 
 Arena::Arena(Arena &&other) noexcept : resource(std::move(other.resource)), destructors(std::move(other.destructors)) {}
