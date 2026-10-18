@@ -1,6 +1,5 @@
 #include "core/fs.hpp"
 
-#include <cstdlib>
 #include <cstring>
 
 namespace cbb {
@@ -25,7 +24,7 @@ File FileReader::readFile() {
 
     std::rewind(file);
 
-    char *buffer = static_cast<char*>(std::malloc(length + 1));
+    char *buffer = new char[length + 1];
 
     std::fread(buffer, 1, length, file);
 
@@ -37,7 +36,7 @@ File FileReader::readFile() {
 File::File(const char *contents): data(contents) {}
 
 File::~File() {
-    std::free(const_cast<void*>(static_cast<const void*>(data)));
+    delete[] data;
 }
 
 File::File(): data(nullptr) {}

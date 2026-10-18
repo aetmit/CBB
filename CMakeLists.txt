@@ -12,6 +12,9 @@ add_executable(cbb
 
     src/core/span.cpp
     src/core/fs.cpp
+    src/core/diagnostics.cpp 
+
+    src/core/structures/arena.cpp
 
     src/lex/lexer.cpp
     src/lex/token.cpp
@@ -19,7 +22,6 @@ add_executable(cbb
     src/parse/ast.cpp 
     src/parse/parser.cpp 
 
-    src/core/structures/arena.cpp
 )
 
 target_compile_options(cbb PRIVATE
