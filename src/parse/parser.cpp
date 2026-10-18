@@ -72,7 +72,28 @@ Expr *Parser::parseTerm() {
 }
 
 Expr *Parser::parseFactor() {
-    return parseUnary();
+    Expr *left = parseUnary();
+    Span startSpan = left->span;
+    while (peek().type == TokenType::Star || peek().type == TokenType::Slash) {
+        Token tokOp = advance();
+
+        Expr *right = parseUnary();
+
+        BinaryOpKind opKind;
+        if (tokOp.type == TokenType::Star) {
+            opKind = BinaryOpKind::Mul;
+        } else {
+            opKind == BinaryOpKind::Div;
+        }
+
+        BinOp op(opKind, tokOp.span);
+
+        BinaryOperator binop{ .left = left, .right = right, .op = op };
+
+        Expr *expr = arena->make<Expr>(nextNodeId(), startSpan.join(right->span), binop);
+        left = expr;
+    }
+    return left;
 }
 
 Expr *Parser::parseUnary() {
