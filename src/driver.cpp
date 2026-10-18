@@ -1,7 +1,11 @@
 #include "driver.hpp"
 
+#include <vector>
+
 #include "core/fs.hpp"
-#include "lex/lexer.hpp"
+#include "core/diagnostics.hpp"
+#include "parse/ast.hpp"
+#include "parse/parser.hpp"
 
 namespace cbb {
 
@@ -16,11 +20,9 @@ int run(int argc, const char *argv[]) {
     FileReader reader(argv[1]);
     File file = reader.readFile();
 
-    lexer::Token token;
-    lexer::Lexer lexer(file.contents());
-    while ((token = lexer.next()).type != lexer::TokenType::Eof) {
-        std::cout << token << "\n";
-    }
+    std::vector<core::Diagnostic> diagnostics;
+    parser::Parser parser(file.contents(), &diagnostics);
+    parser::Program program = parser.parse();
 
     return 0;
 }

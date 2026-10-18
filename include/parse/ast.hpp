@@ -1,7 +1,7 @@
 #ifndef CBB_PARSE_AST_HPP
 #define CBB_PARSE_AST_HPP
 
-#include <memory_resource>
+#include <iostream>
 
 #include "core/types.hpp"
 #include "core/span.hpp"
@@ -16,6 +16,8 @@ struct NodeId {
 
     explicit NodeId(size_t value);
     NodeId() = default;
+
+    friend std::ostream &operator<<(std::ostream &os, const NodeId &nodeid);
 };
 
 struct Expr;
@@ -28,19 +30,19 @@ enum class ExprType {
     Error,
 };
 
-enum class BinaryOpKind {
+enum class BinaryOpType {
     Add,
     Sub,
     Mul,
     Div,
 };
 
-enum class UnaryOpKind {
+enum class UnaryOpType {
     Negate,
 };
 
-using BinOp = core::Spanned<BinaryOpKind>;
-using UnaryOp = core::Spanned<UnaryOpKind>;
+using BinOp = core::Spanned<BinaryOpType>;
+using UnaryOp = core::Spanned<UnaryOpType>;
 
 struct BinaryOperator {
     Expr *left;
@@ -87,6 +89,15 @@ struct Program {
     core::Arena arena;
     Expr *base;
 };
+
+std::ostream &operator<<(std::ostream &os, const BinaryOperator &op);
+std::ostream &operator<<(std::ostream &os, const UnaryOperator &op);
+std::ostream &operator<<(std::ostream &os, const Literal &literal);
+std::ostream &operator<<(std::ostream &os, const Expr &expr);
+std::ostream &operator<<(std::ostream &os, const Program &program);
+std::ostream &operator<<(std::ostream &os, const UnaryOpType &type);
+std::ostream &operator<<(std::ostream &os, const BinaryOpType &type);
+std::ostream &operator<<(std::ostream &os, const ExprType &type);
 
 } // namespace parser
 

@@ -16,7 +16,7 @@ size_t Span::end() const {
 Span::Span(size_t offset, size_t length): offset(offset), length(length) {}
 
 std::ostream &operator<<(std::ostream &os, const Span &span) {
-    os << "Offset: " << span.offset << "\nLength: " << span.length << "\n";
+    os << "Offset: " << span.offset << " Length: " << span.length << "\n";
     return os;
 }
 

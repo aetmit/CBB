@@ -75,11 +75,11 @@ Expr *Parser::parseTerm() {
         
         Expr *right = parseFactor();
 
-        BinaryOpKind opKind;
+        BinaryOpType opKind;
         if (tokOp.type == TokenType::Plus) {
-            opKind = BinaryOpKind::Add;
+            opKind = BinaryOpType::Add;
         } else {
-            opKind = BinaryOpKind::Sub;
+            opKind = BinaryOpType::Sub;
         }
 
         BinOp op(opKind, tokOp.span);
@@ -101,11 +101,11 @@ Expr *Parser::parseFactor() {
 
         Expr *right = parseUnary();
 
-        BinaryOpKind opKind;
+        BinaryOpType opKind;
         if (tokOp.type == TokenType::Star) {
-            opKind = BinaryOpKind::Mul;
+            opKind = BinaryOpType::Mul;
         } else {
-            opKind = BinaryOpKind::Div;
+            opKind = BinaryOpType::Div;
         }
 
         BinOp op(opKind, tokOp.span);
@@ -124,7 +124,7 @@ Expr *Parser::parseUnary() {
 
         Expr *operand = parseUnary();
 
-        UnaryOp op(UnaryOpKind::Negate, opSpan);
+        UnaryOp op(UnaryOpType::Negate, opSpan);
         UnaryOperator unaryop{ .operand = operand, .op = op };
 
         Expr *expr = arena->make<Expr>(nextNodeId(), opSpan.join(operand->span), unaryop);
