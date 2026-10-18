@@ -9,7 +9,7 @@
 
 namespace cbb {
 
-namespace parse {
+namespace parser {
 
 struct NodeId {
     size_t value;
@@ -79,7 +79,7 @@ struct Program {
     Expr *base;
 };
 
-} // namespace parse
+} // namespace parser
 
 } // namespace cbb
 
