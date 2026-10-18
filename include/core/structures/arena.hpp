@@ -2,6 +2,7 @@
 #define CBB_CORE_STRUCTURES_ARENA_HPP
 
 #include <memory_resource>
+#include <memory>
 #include <utility>
 #include <vector>
 #include <new>
@@ -15,11 +16,14 @@ namespace core {
 
 class Arena {
 public:
-    Arena() = default;
+    Arena();
     ~Arena();
 
     Arena(const Arena &) = delete;
     Arena &operator=(const Arena &) = delete;
+
+    Arena(Arena &&other) noexcept;
+    Arena &operator=(Arena &&other) noexcept;
 
     void *alloc(size_t size, size_t alignment = alignof(std::max_align_t));
 
@@ -51,7 +55,7 @@ public:
     void reset();
 
 private:    
-    std::pmr::monotonic_buffer_resource resource;
+    std::unique_ptr<std::pmr::monotonic_buffer_resource> resource;
 
     struct DestructorEntry {
         void *object;
@@ -63,6 +67,6 @@ private:
 
 } // namespace core
 
-};
+} // namespace cbb
 
 #endif // CBB_CORE_STRUCTURES_ARENA_HPP

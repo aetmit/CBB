@@ -12,6 +12,7 @@ add_executable(cbb
 
     src/core/span.cpp
     src/core/fs.cpp
+    src/core/error.cpp
     src/core/diagnostics.cpp 
 
     src/core/structures/arena.cpp

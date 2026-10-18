@@ -15,6 +15,7 @@ struct NodeId {
     size_t value;
 
     explicit NodeId(size_t value);
+    NodeId() = default;
 };
 
 struct Expr;
@@ -61,6 +62,8 @@ struct Literal {
     union {
         u64 integer;
     } as;
+
+    Literal(u64 i);
 };
 
 struct Expr {
@@ -72,6 +75,10 @@ struct Expr {
         UnaryOperator unaryop;
         Literal literal;
     } as;
+
+    Expr(NodeId id, core::Span span, BinaryOperator binop);
+    Expr(NodeId id, core::Span span, UnaryOperator unaryop);
+    Expr(NodeId id, core::Span span, Literal literal);
 };
 
 struct Program {

@@ -16,6 +16,8 @@ struct Span {
     Span(size_t offset, size_t length);
     Span() = default;
     size_t end() const;
+    // must be freed by caller
+    char *retrieve_source(const char *source) const;
 
     friend std::ostream &operator<<(std::ostream &os, const Span &span);
 };
