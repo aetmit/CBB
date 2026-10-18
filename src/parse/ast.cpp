@@ -2,10 +2,10 @@
 
 namespace cbb {
 
-namespace parse {
+namespace parser {
 
 NodeId::NodeId(size_t value): value(value) {}
 
-} // namespace parse
+} // namespace parser
 
 } // namespace cbb

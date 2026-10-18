@@ -17,6 +17,7 @@ add_executable(cbb
     src/lex/token.cpp
 
     src/parse/ast.cpp 
+    src/parse/parser.cpp 
 
     src/core/structures/arena.cpp
 )
