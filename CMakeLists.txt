@@ -27,6 +27,8 @@ add_executable(cbb
     src/parse/ast.cpp 
     src/parse/parser.cpp 
 
+    src/sema/hir.cpp
+    src/sema/ids.cpp
 )
 
 target_compile_options(cbb PRIVATE
