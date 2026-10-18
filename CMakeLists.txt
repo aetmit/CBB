@@ -29,6 +29,7 @@ add_executable(cbb
 
     src/sema/hir.cpp
     src/sema/ids.cpp
+    src/sema/analysis.cpp
 )
 
 target_compile_options(cbb PRIVATE
