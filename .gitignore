@@ -64,3 +64,5 @@ build/
 *.cbb
 
 Dockerfile
+
+terminal.sh
