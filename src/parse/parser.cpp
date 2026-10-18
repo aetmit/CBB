@@ -76,7 +76,19 @@ Expr *Parser::parseFactor() {
 }
 
 Expr *Parser::parseUnary() {
-    return parseUnary();
+    if (peek().type == TokenType::Minus) {
+        Span opSpan = advance().span;
+
+        Expr *operand = parseUnary();
+
+        UnaryOp op(UnaryOpKind::Negate, opSpan);
+        UnaryOperator unaryop{ .op = op, .operand = operand };
+
+        Expr *expr = arena->make<Expr>(nextNodeId(), opSpan.join(operand->span), unaryop);
+        return expr;
+    }
+
+    return parsePrimary();
 }
 
 Expr *Parser::parsePrimary() {
