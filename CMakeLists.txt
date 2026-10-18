@@ -15,6 +15,10 @@ add_executable(cbb
 
     src/lex/lexer.cpp
     src/lex/token.cpp
+
+    src/parse/ast.cpp 
+
+    src/core/structures/arena.cpp
 )
 
 target_compile_options(cbb PRIVATE

@@ -1,8 +1,11 @@
 #ifndef CBB_PARSE_AST_HPP
 #define CBB_PARSE_AST_HPP
 
+#include <memory_resource>
+
 #include "core/types.hpp"
 #include "core/span.hpp"
+#include "core/structures/arena.hpp"
 
 namespace cbb {
 
@@ -72,7 +75,8 @@ struct Expr {
 };
 
 struct Program {
-    
+    core::Arena arena;
+    Expr *base;
 };
 
 } // namespace parse
