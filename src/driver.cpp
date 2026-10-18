@@ -1,6 +1,7 @@
 #include "driver.hpp"
 
 #include <vector>
+#include <iostream>
 
 #include "core/fs.hpp"
 #include "core/diagnostics.hpp"
@@ -23,6 +24,8 @@ int run(int argc, const char *argv[]) {
     std::vector<core::Diagnostic> diagnostics;
     parser::Parser parser(file.contents(), &diagnostics);
     parser::Program program = parser.parse();
+
+    std::cout << program << "\n";
 
     return 0;
 }

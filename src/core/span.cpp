@@ -30,7 +30,7 @@ char *Span::retrieve_source(const char *source) const {
 Span Span::join(Span other) const {
     size_t offset = std::min(this->offset, other.offset);
     size_t end = std::max(this->end(), other.end());
-    size_t length = offset - end;
+    size_t length = end - offset;
     return Span(offset, length);
 }
 

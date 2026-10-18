@@ -14,6 +14,7 @@ Parser::Parser(const char *source, std::vector<core::Diagnostic> *diagnostics):
     tokenstream(source), source(source), diagnostics(diagnostics) {
     
     current = tokenstream.next();
+    currentNodeId = NodeId(0);
 }
 
 Parser::~Parser() {
