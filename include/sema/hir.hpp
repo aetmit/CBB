@@ -14,6 +14,8 @@ struct Expr;
 
 enum class ExprType {
     Literal,
+    BinaryOp,
+    UnaryOp,
 };
 
 enum class BinaryOpType {
@@ -57,6 +59,8 @@ struct Expr {
     Type type;
     union {
         Literal literal;
+        UnaryOp unaryop;
+        BinaryOp binaryop;
     } as;
 };
 

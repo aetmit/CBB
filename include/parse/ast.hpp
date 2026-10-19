@@ -17,7 +17,13 @@ struct NodeId {
     explicit NodeId(size_t value);
     NodeId() = default;
 
+    bool operator==(const NodeId &other) const;
+
     friend std::ostream &operator<<(std::ostream &os, const NodeId &nodeid);
+};
+
+struct NodeIdHasher {
+    size_t operator()(const NodeId &id) const noexcept;
 };
 
 struct Expr;
@@ -31,10 +37,10 @@ enum class ExprType {
 };
 
 enum class BinaryOpType {
-    Add,
-    Sub,
-    Mul,
-    Div,
+    Add = 0x00,
+    Sub = 0x01,
+    Mul = 0x02,
+    Div = 0x03,
 };
 
 enum class UnaryOpType {

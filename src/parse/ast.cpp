@@ -16,6 +16,14 @@ Expr::Expr(NodeId id, core::Span span, Literal literal): type(ExprType::Literal)
 
 Expr::Expr(NodeId id, core::Span span): type(ExprType::Error), id(id), span(span), as{} {}
 
+bool NodeId::operator==(const NodeId &other) const {
+    return value == other.value;
+}
+
+size_t NodeIdHasher::operator()(const NodeId &id) const noexcept {
+    return std::hash<size_t>{}(id.value);
+}
+
 std::ostream &operator<<(std::ostream &os, const NodeId &nodeid) {
     os << nodeid.value;
 

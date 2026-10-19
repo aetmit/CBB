@@ -27,7 +27,7 @@ private:
 };
 
 struct AnalysisCtx {
-    std::unordered_map<parser::NodeId, Type> types;
+    std::unordered_map<parser::NodeId, Type, parser::NodeIdHasher> types;
 
     std::vector<core::Diagnostic> *diagnostics;
 
