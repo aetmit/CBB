@@ -26,30 +26,39 @@ public:
 
 private:
 
-    Type resolveArithmetic(parser::BinaryOpType op, Type left, Type right);
+    Type resolveBinaryArithmetic(parser::BinaryOpType op, Type left, Type right);
 
-    using BinaryOpTypeHandler = Type(TypeChecker::*)(parser::BinaryOpType, Type left, Type right);
+    Type resolveLogicalUnary(parser::UnaryOpType op, Type operand);
+
+    using BinaryOpTypeHandler = Type(TypeChecker::*)(parser::BinaryOpType, Type, Type);
+    using UnaryOpTypeHandler = Type(TypeChecker::*)(parser::UnaryOpType, Type);
+
 
     BinaryOpTypeHandler getBinaryHandler(parser::BinaryOpType op);
+    UnaryOpTypeHandler getUnaryHandler(parser::UnaryOpType op);
 
-    static constexpr std::array<BinaryOpTypeHandler, 1> binaryoptypehandlers = { 
-        &TypeChecker::resolveArithmetic,
-    };
+    static constexpr std::array<std::pair<std::pair<Type, Type>, Type>, 2> additionTypeTable = {{
+        {{Type::Int, Type::Int}, Type::Int},
 
-    static constexpr std::array<std::pair<std::pair<Type, Type>, Type>, 1> additionTypeTable = {{
+        {{Type::Error, Type::Error}, Type::Error},
+    }};
+
+    static constexpr std::array<std::pair<std::pair<Type, Type>, Type>, 2> subtractionTypeTable = {{
+        {{Type::Int, Type::Int}, Type::Int},
+
+        {{Type::Error, Type::Error}, Type::Error},
+    }};
+
+    static constexpr std::array<std::pair<std::pair<Type, Type>, Type>, 2> multiplicationTypeTable = {{
         {{Type::Int, Type::Int}, Type::Int}
     }};
 
-    static constexpr std::array<std::pair<std::pair<Type, Type>, Type>, 1> subtractionTypeTable = {{
+    static constexpr std::array<std::pair<std::pair<Type, Type>, Type>, 2> divisionTypeTable = {{
         {{Type::Int, Type::Int}, Type::Int}
     }};
 
-    static constexpr std::array<std::pair<std::pair<Type, Type>, Type>, 1> multiplicationTypeTable = {{
-        {{Type::Int, Type::Int}, Type::Int}
-    }};
-
-    static constexpr std::array<std::pair<std::pair<Type, Type>, Type>, 1> divisionTypeTable = {{
-        {{Type::Int, Type::Int}, Type::Int}
+    static constexpr std::array<std::pair<Type, Type>, 1> unaryNegateTable = {{
+        {Type::Int, Type::Int}
     }};
 };
 

@@ -17,9 +17,10 @@ Type TypeChecker::checkExpr(ast::Expr *expr, AnalysisCtx *ctx) {
         case ast::ExprType::Literal: {
             switch (expr->as.literal.type) {
                 case ast::LiteralType::Integer:
-                    if (expr->as.literal.as.integer > std::numeric_limits<u64>::max()) {
-                        type = Type::Int;
+                    if (expr->as.literal.as.integer > std::numeric_limits<u32>::max()) {
+                        core::fatal_error("larger integer types not implemented");
                     }
+                    type = Type::Int;
                     break;
             }
             break;
@@ -40,17 +41,27 @@ Type TypeChecker::checkExpr(ast::Expr *expr, AnalysisCtx *ctx) {
         case ast::ExprType::UnaryOp: {
             Type operandType = checkExpr(expr->as.unaryop.operand, ctx);
 
-            
+            UnaryOpTypeHandler handler = getUnaryHandler(expr->as.unaryop.op.node);
+            if (handler == nullptr) {
+                throw;
+            }
+
+            Type result = (this->*handler)(expr->as.unaryop.op.node, operandType);
+
+            type = result;
+            break;
         }
         case ast::ExprType::Error: {
             UNREACHABLE();
+            // initialise this to make the compiler shut up about uninitialised variables even though this code is unreachable
+            type = Type::Error;
         }
     }
 
     return type;
 }
 
-Type TypeChecker::resolveArithmetic(ast::BinaryOpType op, Type left, Type right) {
+Type TypeChecker::resolveBinaryArithmetic(ast::BinaryOpType op, Type left, Type right) {
     Type type;
     switch (op) {
         case ast::BinaryOpType::Add: {
@@ -85,14 +96,40 @@ Type TypeChecker::resolveArithmetic(ast::BinaryOpType op, Type left, Type right)
     return type;
 }
 
+Type TypeChecker::resolveLogicalUnary(ast::UnaryOpType op, Type operand) {
+    Type type;
+    if (type == Type::Error) {
+        type = Type::Error;
+        return type;
+    }
+    switch (op) {
+        case ast::UnaryOpType::Negate: {
+            for (const auto &[k, v] : unaryNegateTable) {
+                if (k == operand) {
+                    type = v;
+                }
+            }
+        }
+    }
+    return type;
+}
+
 TypeChecker::BinaryOpTypeHandler TypeChecker::getBinaryHandler(ast::BinaryOpType op) {
     switch (op) {
         case ast::BinaryOpType::Add:
         case ast::BinaryOpType::Sub:
         case ast::BinaryOpType::Mul:
         case ast::BinaryOpType::Div:
-            return binaryoptypehandlers[0];
+            return &resolveBinaryArithmetic;
+        default:
+            return nullptr;
+    }
+}
 
+TypeChecker::UnaryOpTypeHandler TypeChecker::getUnaryHandler(parser::UnaryOpType op) {
+    switch (op) {
+        case ast::UnaryOpType::Negate:
+            return &resolveLogicalUnary;
         default:
             return nullptr;
     }
