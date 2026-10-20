@@ -4,6 +4,7 @@
 #include <cstdio>
 
 #include "core/error.hpp"
+#include "sema/analysis.hpp"
 
 namespace cbb {
 
@@ -57,6 +58,8 @@ Type TypeChecker::checkExpr(ast::Expr *expr, AnalysisCtx *ctx) {
             type = Type::Error;
         }
     }
+
+    ctx->types.insert({expr->id, type});
 
     return type;
 }
