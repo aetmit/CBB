@@ -19,6 +19,10 @@ struct NodeId {
 
     bool operator==(const NodeId &other) const;
 
+    NodeId &operator+=(const size_t &other);
+    NodeId &operator++();
+    NodeId operator++(int);
+
     friend std::ostream &operator<<(std::ostream &os, const NodeId &nodeid);
 };
 

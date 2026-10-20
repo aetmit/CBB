@@ -59,9 +59,7 @@ Token Parser::advance() {
 }
 
 NodeId Parser::nextNodeId() {
-    NodeId tmp = currentNodeId;
-    currentNodeId.value++;
-    return tmp;
+    return currentNodeId++;
 }
 
 Expr *Parser::parseExpression() {

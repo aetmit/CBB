@@ -20,6 +20,22 @@ bool NodeId::operator==(const NodeId &other) const {
     return value == other.value;
 }
 
+NodeId &NodeId::operator+=(const size_t &other) {
+    this->value += other;
+    return *this;
+}
+
+NodeId &NodeId::operator++() {
+    *this += 1;
+    return *this;
+}
+
+NodeId NodeId::operator++(int) {
+    NodeId tmp = *this;
+    ++(*this);
+    return tmp;
+}
+
 size_t NodeIdHasher::operator()(const NodeId &id) const noexcept {
     return std::hash<size_t>{}(id.value);
 }
