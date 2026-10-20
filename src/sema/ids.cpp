@@ -22,6 +22,8 @@ HirId HirId::operator++(int) {
     return tmp;
 }
 
+HirId::HirId(): value(0) {}
+
 } // namespace sema
 
 } // namespace cbb

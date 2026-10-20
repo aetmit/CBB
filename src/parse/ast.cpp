@@ -30,6 +30,8 @@ NodeId &NodeId::operator++() {
     return *this;
 }
 
+NodeId::NodeId(): value(0) {}
+
 NodeId NodeId::operator++(int) {
     NodeId tmp = *this;
     ++(*this);

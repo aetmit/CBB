@@ -10,6 +10,7 @@ namespace sema {
 struct HirId {
     size_t value;
     explicit HirId(size_t value);
+    HirId();
     
     HirId &operator+=(const size_t &other);
     HirId &operator++();

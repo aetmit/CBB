@@ -15,7 +15,7 @@ struct NodeId {
     size_t value;
 
     explicit NodeId(size_t value);
-    NodeId() = default;
+    NodeId();
 
     bool operator==(const NodeId &other) const;
 
