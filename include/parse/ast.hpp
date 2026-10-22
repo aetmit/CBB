@@ -5,7 +5,7 @@
 
 #include "core/types.hpp"
 #include "core/span.hpp"
-#include "core/structures/arena.hpp"
+#include "core/arena.hpp"
 
 namespace cbb {
 
@@ -96,7 +96,7 @@ struct Expr {
 };
 
 struct Program {
-    core::Arena arena;
+    core::arena arena;
     Expr *base;
 };
 

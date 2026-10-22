@@ -20,6 +20,7 @@ add_executable(cbb
     src/core/diagnostics.cpp 
 
     src/core/structures/arena.cpp
+    src/core/structures/str.cpp
 
     src/lex/lexer.cpp
     src/lex/token.cpp

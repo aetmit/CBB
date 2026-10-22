@@ -34,6 +34,18 @@ std::ostream &operator<<(std::ostream &os, const TokenType &type) {
             return os << "Slash";
         case TokenType::Eof: 
             return os << "Eof";
+        case TokenType::OpenBrace:
+            return os << "OpenBrace";
+        case TokenType::CloseBrace:
+            return os << "CloseBrace";
+        case TokenType::Identifier:
+            return os << "Identifier";
+        case TokenType::Int:
+            return os << "Int";
+        case TokenType::Equal:
+            return os << "Equal";
+        case TokenType::Semicolon:
+            return os << "Semicolon";
     }
 
     os << "Unknown";

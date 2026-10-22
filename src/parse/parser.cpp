@@ -23,7 +23,6 @@ Parser::~Parser() {
     diagnostics = nullptr;
 }
 
-using core::Arena;
 using lexer::Token;
 using lexer::TokenType;
 using core::Span;

@@ -55,12 +55,27 @@ Token Lexer::next() {
         case '/':
             advance();
             return newToken(TokenType::Slash);
+        case '{':
+            advance();
+            return newToken(TokenType::OpenBrace);
+        case '}':
+            advance();
+            return newToken(TokenType::CloseBrace);
+        case '=':
+            advance();
+            return newToken(TokenType::Equal);
+        case ';':
+            advance();
+            return newToken(TokenType::Semicolon);
         default:
             if (std::isdigit(static_cast<unsigned char>(c))) {
                 while (!isAtEnd() && std::isdigit(static_cast<unsigned char>(peek()))) {
                     advance();
                 }
                 return newToken(TokenType::IntegerLiteral);
+            } else if (std::isalpha(static_cast<unsigned char>(c))) {
+                char *lexeme = new char[16];
+
             } else {
                 // unimplemented
                 throw 1;

@@ -12,9 +12,21 @@ namespace lexer {
 
 enum class TokenType {
     IntegerLiteral,
+    Identifier,
 
     OpenParen,
     CloseParen,
+
+    OpenBrace,
+    CloseBrace,
+
+    Equal,
+
+    Semicolon,
+
+    // not to be confused with integerliteral which is a literal e.g. 42 
+    // Int is the keyword/type
+    Int,
 
     Plus,
     Minus,

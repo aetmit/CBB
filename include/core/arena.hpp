@@ -1,5 +1,5 @@
-#ifndef CBB_CORE_STRUCTURES_ARENA_HPP
-#define CBB_CORE_STRUCTURES_ARENA_HPP
+#ifndef CBB_CORE_ARENA_HPP
+#define CBB_CORE_ARENA_HPP
 
 #include <memory_resource>
 #include <memory>
@@ -14,16 +14,16 @@ namespace cbb {
 
 namespace core {
 
-class Arena {
+class arena {
 public:
-    Arena();
-    ~Arena();
+    arena();
+    ~arena();
 
-    Arena(const Arena &) = delete;
-    Arena &operator=(const Arena &) = delete;
+    arena(const arena &) = delete;
+    arena &operator=(const arena &) = delete;
 
-    Arena(Arena &&other) noexcept;
-    Arena &operator=(Arena &&other) noexcept;
+    arena(arena &&other) noexcept;
+    arena &operator=(arena &&other) noexcept;
 
     void *alloc(size_t size, size_t alignment = alignof(std::max_align_t));
 
@@ -69,4 +69,4 @@ private:
 
 } // namespace cbb
 
-#endif // CBB_CORE_STRUCTURES_ARENA_HPP
+#endif // CBB_CORE_ARENA_HPP

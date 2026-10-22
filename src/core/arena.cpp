@@ -1,20 +1,20 @@
-#include "core/structures/arena.hpp"
+#include "core/arena.hpp"
 
 namespace cbb {
 
 namespace core {
 
-void *Arena::alloc(size_t size, size_t alignment) {
+void *arena::alloc(size_t size, size_t alignment) {
     return resource->allocate(size, alignment);
 }
 
-Arena::~Arena() {
+arena::~arena() {
     reset();
 }
 
-Arena::Arena(): resource(std::make_unique<std::pmr::monotonic_buffer_resource>()) {}
+arena::arena(): resource(std::make_unique<std::pmr::monotonic_buffer_resource>()) {}
 
-void Arena::reset() {
+void arena::reset() {
     for (auto it = destructors.rbegin(); it != destructors.rend(); ++it) {
         it->destroy(it->object);
     }
@@ -28,9 +28,9 @@ void Arena::reset() {
     resource = std::make_unique<std::pmr::monotonic_buffer_resource>();
 }
 
-Arena::Arena(Arena &&other) noexcept : resource(std::move(other.resource)), destructors(std::move(other.destructors)) {}
+arena::arena(arena &&other) noexcept : resource(std::move(other.resource)), destructors(std::move(other.destructors)) {}
 
-Arena &Arena::operator=(Arena &&other) noexcept {
+arena &arena::operator=(arena &&other) noexcept {
     if (this == &other) {
         return *this;
     }

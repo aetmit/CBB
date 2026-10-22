@@ -7,7 +7,7 @@
 #include "core/diagnostics.hpp"
 #include "core/span.hpp"
 #include "core/types.hpp"
-#include "core/structures/arena.hpp"
+#include "core/arena.hpp"
 #include "lex/lexer.hpp"
 
 namespace cbb {
@@ -22,7 +22,7 @@ public:
     
 private:    
     // reference to the arena owned by Program
-    core::Arena *arena;
+    core::arena *arena;
 
     lexer::Lexer tokenstream; 
     // non owning pointer
