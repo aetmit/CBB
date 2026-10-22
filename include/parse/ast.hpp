@@ -2,6 +2,7 @@
 #define CBB_PARSE_AST_HPP
 
 #include <iostream>
+#include <vector>
 
 #include "core/types.hpp"
 #include "core/span.hpp"
@@ -95,9 +96,27 @@ struct Expr {
     Expr(NodeId id, core::Span span);
 };
 
+struct ExprStmt {
+    Expr *expr;
+};
+
+enum class StmtType {
+    ExprStmt,
+};
+
+struct Stmt {
+    StmtType type;
+    NodeId id;
+    core::Span span;
+
+    union {
+        ExprStmt exprstmt;
+    } as;
+};
+
 struct Program {
     core::arena arena;
-    Expr *base;
+    std::vector<Stmt*> body;   
 };
 
 std::ostream &operator<<(std::ostream &os, const BinaryOperator &op);
