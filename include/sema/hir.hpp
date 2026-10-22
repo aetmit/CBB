@@ -1,7 +1,7 @@
 #ifndef CBB_SEMA_HIR_HPP
 #define CBB_SEMA_HIR_HPP
 
-#include "core/structures/arena.hpp"
+#include "core/arena.hpp"
 #include "core/types.hpp"
 #include "sema/ids.hpp"
 #include "sema/types.hpp"
@@ -65,7 +65,7 @@ struct Expr {
 };
 
 struct Program {
-    core::Arena arena;
+    core::arena arena;
     Expr *root;
 };
 

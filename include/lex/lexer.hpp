@@ -1,6 +1,9 @@
 #ifndef CBB_LEX_LEXER_HPP
 #define CBB_LEX_LEXER_HPP
 
+#include <array>
+#include <utility>
+
 #include "lex/token.hpp"
 
 namespace cbb {
@@ -29,6 +32,12 @@ private:
     char advance();
     char peek() const;
     Token newToken(TokenType type) const;
+    TokenType getIdentifierType(const char *str) const;
+
+    static constexpr std::array<std::pair<const char *, TokenType>, 1> keywords = {{
+        // placeholder
+        {"if", TokenType::Eof}
+    }};
 };
 
 } // namespace lexer

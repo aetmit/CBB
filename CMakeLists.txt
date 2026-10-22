@@ -18,9 +18,7 @@ add_executable(cbb
     src/core/fs.cpp
     src/core/error.cpp
     src/core/diagnostics.cpp 
-
-    src/core/structures/arena.cpp
-    src/core/structures/str.cpp
+    src/core/arena.cpp
 
     src/lex/lexer.cpp
     src/lex/token.cpp

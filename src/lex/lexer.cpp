@@ -3,6 +3,7 @@
 #include <cstring>
 #include <cctype>
 
+#include "core/types.hpp"
 namespace cbb {
 
 namespace lexer {
@@ -73,14 +74,49 @@ Token Lexer::next() {
                     advance();
                 }
                 return newToken(TokenType::IntegerLiteral);
-            } else if (std::isalpha(static_cast<unsigned char>(c))) {
+            } else if (std::isalpha(static_cast<unsigned char>(c)) || c == '_') {
                 char *lexeme = new char[16];
+                size_t i = 0;
+                size_t cap = 16;
+                while (!isAtEnd() && (std::isalnum(static_cast<unsigned char>(peek())) || peek() == '_')) {
+                    if (i >= cap) {
+                        cap *= 2;
+                        char *newLexeme = new char[cap];
+                        std::memcpy(newLexeme, lexeme, i);
+                        delete[] lexeme;
+                        lexeme = newLexeme; 
+                    }
+                    lexeme[i++] = peek();
+                    advance();
+                }
+                if (i >= cap) {
+                    cap += 1;
+                    char *newLexeme = new char[cap];
+                    std::memcpy(newLexeme, lexeme, i);
+                    delete[] lexeme;
+                    lexeme = newLexeme;
+                }
+                lexeme[i] = '\0';
 
+                TokenType identType = getIdentifierType(lexeme);
+
+                delete[] lexeme;
+
+                return newToken(identType);
             } else {
                 // unimplemented
                 throw 1;
             }
     }
+}
+
+TokenType Lexer::getIdentifierType(const char *str) const {
+    for (size_t i = 0; i < keywords.size(); i++) {
+        if (std::strcmp(str, keywords[i].first) == 0)  {
+            return keywords[i].second;
+        }
+    }
+    return TokenType::Identifier;
 }
 
 Token Lexer::newToken(TokenType type) const {
