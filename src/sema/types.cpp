@@ -101,7 +101,7 @@ Type TypeChecker::resolveBinaryArithmetic(ast::BinaryOpType op, Type left, Type 
 
 Type TypeChecker::resolveLogicalUnary(ast::UnaryOpType op, Type operand) {
     Type type;
-    if (type == Type::Error) {
+    if (operand == Type::Error) {
         type = Type::Error;
         return type;
     }
@@ -123,7 +123,7 @@ TypeChecker::BinaryOpTypeHandler TypeChecker::getBinaryHandler(ast::BinaryOpType
         case ast::BinaryOpType::Sub:
         case ast::BinaryOpType::Mul:
         case ast::BinaryOpType::Div:
-            return &resolveBinaryArithmetic;
+            return &TypeChecker::resolveBinaryArithmetic;
         default:
             return nullptr;
     }
@@ -132,7 +132,7 @@ TypeChecker::BinaryOpTypeHandler TypeChecker::getBinaryHandler(ast::BinaryOpType
 TypeChecker::UnaryOpTypeHandler TypeChecker::getUnaryHandler(parser::UnaryOpType op) {
     switch (op) {
         case ast::UnaryOpType::Negate:
-            return &resolveLogicalUnary;
+            return &TypeChecker::resolveLogicalUnary;
         default:
             return nullptr;
     }

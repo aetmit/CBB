@@ -25,6 +25,11 @@ int run(int argc, const char *argv[]) {
     parser::Parser parser(file.contents(), &diagnostics);
     parser::Program program = parser.parse();
 
+    if (!diagnostics.empty()) {
+        // TODO: PRINT ERRORS
+        return 1; 
+    }
+
     std::cout << program << "\n";
 
     return 0;

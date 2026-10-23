@@ -40,8 +40,6 @@ Program Parser::parse() {
         stmts.push_back(parseStatement());
     }
 
-    Expr *expr = parseExpression();
-
     program.body = stmts;
 
     return program;
@@ -68,6 +66,8 @@ void Parser::sync() {
             case TokenType::Semicolon:
                 advance();
                 return;
+            default:
+                advance();
         }
     }
 }
@@ -85,6 +85,24 @@ Stmt *Parser::parseStatement() {
         case TokenType::IntegerLiteral:
         case TokenType::OpenParen:
             return parseExprStmt();
+
+        default:
+            Span span = peek().span;
+            const char *lexeme = span.retrieve_source(source);
+            const char *start = "unexpected token: ";
+            size_t msgStartLen = std::strlen(start);
+            size_t lexemeLen = std::strlen(lexeme);
+            size_t len = msgStartLen + lexemeLen;
+            char *msg = new char[len + 1];
+            std::memcpy(msg, start, msgStartLen);
+            std::memcpy(msg, lexeme, lexemeLen);
+            msg[len + 1] = '\0';
+
+            delete[] lexeme;
+            error(msg, true, span);
+            sync();
+            Stmt *stmt = arena->make<Stmt>(nextNodeId(), span);
+            return stmt;
     }
 }
 

@@ -18,7 +18,7 @@ Expr::Expr(NodeId id, core::Span span): type(ExprType::Error), id(id), span(span
 
 Stmt::Stmt(NodeId id, core::Span span): type(StmtType::Error), id(id), span(span), as{} {}
 
-Stmt::Stmt(NodeId id, core::Span span, ExprStmt exprstmt): type(StmtType::ExprStmt), id(id), span(span), as{} {}
+Stmt::Stmt(NodeId id, core::Span span, ExprStmt exprstmt): type(StmtType::ExprStmt), id(id), span(span), as{ .exprstmt = exprstmt} {}
 
 bool NodeId::operator==(const NodeId &other) const {
     return value == other.value;
@@ -167,6 +167,9 @@ std::ostream &operator<<(std::ostream &os, const StmtType &type) {
         case StmtType::ExprStmt:
             os << "ExprStmt";
             break;
+        case StmtType::Error:
+            os << "Error";
+            break;
     }
 
     return os;
@@ -195,6 +198,9 @@ std::ostream &operator<<(std::ostream &os, const Stmt &stmt) {
             }
 
             os << "\n        }\n";
+            break;
+        case StmtType::Error:
+            os << "        error\n";
             break;
     }
 
