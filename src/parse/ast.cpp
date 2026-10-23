@@ -16,6 +16,10 @@ Expr::Expr(NodeId id, core::Span span, Literal literal): type(ExprType::Literal)
 
 Expr::Expr(NodeId id, core::Span span): type(ExprType::Error), id(id), span(span), as{} {}
 
+Stmt::Stmt(NodeId id, core::Span span): type(StmtType::Error), id(id), span(span), as{} {}
+
+Stmt::Stmt(NodeId id, core::Span span, ExprStmt exprstmt): type(StmtType::ExprStmt), id(id), span(span), as{} {}
+
 bool NodeId::operator==(const NodeId &other) const {
     return value == other.value;
 }

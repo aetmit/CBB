@@ -1,5 +1,7 @@
 #include "parse/parser.hpp"
 
+#include <vector>
+
 #include <cerrno>
 #include <cstdlib>
 #include <cstring>
@@ -32,13 +34,15 @@ Program Parser::parse() {
     Program program{};
     this->arena = &program.arena;
 
-    Expr *expr = parseExpression();
+    std::vector<Stmt*> stmts;
 
-    if (peek().type != TokenType::Eof) {
-        error("expected eof", false, peek().span);
+    while (peek().type != TokenType::Eof) {
+        stmts.push_back(parseStatement());
     }
 
-    program.base = expr;
+    Expr *expr = parseExpression();
+
+    program.body = stmts;
 
     return program;
 }
@@ -57,12 +61,48 @@ Token Parser::advance() {
     return tmp;
 }
 
+void Parser::sync() {
+    while (peek().type != TokenType::Eof) {
+        TokenType type = peek().type;
+        switch (type) {
+            case TokenType::Semicolon:
+                advance();
+                return;
+        }
+    }
+}
+
 NodeId Parser::nextNodeId() {
     return currentNodeId++;
 }
 
 Expr *Parser::parseExpression() {
     return parseTerm();
+}
+
+Stmt *Parser::parseStatement() {
+    switch (peek().type)  {
+        case TokenType::IntegerLiteral:
+        case TokenType::OpenParen:
+            return parseExprStmt();
+    }
+}
+
+Stmt *Parser::parseExprStmt() {
+    Expr *expr = parseExpression();
+
+    if (peek().type != TokenType::Semicolon) {
+        Span span = peek().span;
+        error("expected ';' after expression", false, span);;
+        sync();
+        Stmt *stmt = arena->make<Stmt>(nextNodeId(), span);
+        return stmt;
+    }
+
+    Span span = expr->span.join(advance().span);
+    ExprStmt exprstmt = { .expr = expr };
+    Stmt *stmt = arena->make<Stmt>(nextNodeId(), span, exprstmt);
+    return stmt;
 }
 
 Expr *Parser::parseTerm() {

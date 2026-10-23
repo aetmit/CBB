@@ -102,6 +102,8 @@ struct ExprStmt {
 
 enum class StmtType {
     ExprStmt,
+
+    Error,
 };
 
 struct Stmt {
@@ -112,6 +114,9 @@ struct Stmt {
     union {
         ExprStmt exprstmt;
     } as;
+
+    Stmt(NodeId id, core::Span span);
+    Stmt(NodeId id, core::Span span, ExprStmt exprstmt);
 };
 
 struct Program {

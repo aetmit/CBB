@@ -38,6 +38,8 @@ private:
 
     void error(const char *message, bool isAllocated, core::Span);
 
+    void sync();
+
     // parsing functions
     lexer::Token peek() const;
     lexer::Token advance();
@@ -47,6 +49,9 @@ private:
     Expr *parseFactor();
     Expr *parseUnary();
     Expr *parsePrimary();
+
+    Stmt *parseStatement();
+    Stmt *parseExprStmt();
 };
 
 } // namespace parser
