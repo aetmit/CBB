@@ -158,17 +158,66 @@ std::ostream &operator<<(std::ostream &os, const Expr &expr) {
     return os;
 }
 
-std::ostream &operator<<(std::ostream &os, const Program &program) {
-    os << "Program {\n"
-       << "    base: ";
-
-    if (program.base != nullptr) {
-        os << *program.base;
-    } else {
-        os << "nullptr";
+std::ostream &operator<<(std::ostream &os, const StmtType &type) {
+    switch (type) {
+        case StmtType::ExprStmt:
+            os << "ExprStmt";
+            break;
     }
 
-    os << "\n}";
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const Stmt &stmt) {
+    os << "Stmt {\n"
+       << "    type: ";
+
+    os << stmt.type;
+
+    os << ",\n"
+       << "    id: " << stmt.id << ",\n"
+       << "    span: " << stmt.span << ",\n"
+       << "    as: {\n";
+
+    switch (stmt.type) {
+        case StmtType::ExprStmt:
+            os << "        exprstmt: {\n"
+               << "            expr: ";
+
+            if (stmt.as.exprstmt.expr != nullptr) {
+                os << *stmt.as.exprstmt.expr;
+            } else {
+                os << "nullptr";
+            }
+
+            os << "\n        }\n";
+            break;
+    }
+
+    os << "    }\n"
+       << "}";
+
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const Program &program) {
+    os << "Program {\n"
+       << "    body: [";
+
+    for (auto it = program.body.begin(); it != program.body.end(); ++it) {
+        if (it != program.body.begin()) {
+            os << ", ";
+        }
+
+        if (*it != nullptr) {
+            os << **it;
+        } else {
+            os << "nullptr";
+        }
+    }
+
+    os << "]\n"
+       << "}";
 
     return os;
 }

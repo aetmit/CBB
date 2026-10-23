@@ -127,6 +127,8 @@ std::ostream &operator<<(std::ostream &os, const Program &program);
 std::ostream &operator<<(std::ostream &os, const UnaryOpType &type);
 std::ostream &operator<<(std::ostream &os, const BinaryOpType &type);
 std::ostream &operator<<(std::ostream &os, const ExprType &type);
+std::ostream &operator<<(std::ostream &os, const Stmt &stmt);
+std::ostream &operator<<(std::ostream &os, const StmtType &type);
 
 } // namespace parser
 
