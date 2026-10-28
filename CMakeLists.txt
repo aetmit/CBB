@@ -1,35 +1,17 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(cbb LANGUAGES CXX)
+project(cbb LANGUAGES C)
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build." FORCE)
 endif()
 
-set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_C_STANDARD 17)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS OFF)
 
 add_executable(cbb
-    src/main.cpp
-    src/driver.cpp
-
-    src/core/span.cpp
-    src/core/fs.cpp
-    src/core/error.cpp
-    src/core/diagnostics.cpp 
-    src/core/arena.cpp
-
-    src/lex/lexer.cpp
-    src/lex/token.cpp
-
-    src/parse/ast.cpp 
-    src/parse/parser.cpp 
-
-    src/sema/hir.cpp
-    src/sema/ids.cpp
-    src/sema/analysis.cpp
-    src/sema/types.cpp
+    src/main.c
 )
 
 target_compile_options(cbb PRIVATE
