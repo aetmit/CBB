@@ -14,6 +14,8 @@ add_executable(cbb
     src/main.c
 
     src/core/fs.c
+    src/core/io.c 
+    src/core/span.c
 )
 
 target_compile_options(cbb PRIVATE
