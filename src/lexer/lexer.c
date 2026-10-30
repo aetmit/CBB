@@ -68,6 +68,26 @@ static struct token new_token(struct lexer *lexer, enum tokentype type) {
     return (struct token){ .type = type, .span = span, .column = lexer->start_column, .line = lexer->line };
 }
 
+static struct keyword_entry {
+    const char *lexeme;
+    enum tokentype value;
+};
+
+static constexpr int keyword_count = 1;
+
+static struct keyword_entry keywords[1] = {
+    (struct keyword_entry){ .lexeme = "int", .value = TK_INT },
+};
+
+static enum tokentype get_keyword(const char *s) {
+    for (int i = 0; i < keyword_count; ++i) {
+        if (strcmp(s, keywords[i].lexeme) == 0) {
+            return keywords[i].value;
+        }
+    }
+    return TK_IDENTIFIER;
+}
+
 struct token lexer_next(struct lexer *lexer) {
     skip_whitespace(lexer);
 
@@ -127,7 +147,11 @@ struct token lexer_next(struct lexer *lexer) {
 
                 char *lexeme = dyn_string_c_str(&str);
 
+                enum tokentype type = get_keyword(lexeme);
+
                 dyn_string_destroy(&str);
+
+                return new_token(lexer, type);
             }
     }
 }

@@ -16,6 +16,9 @@ add_executable(cbb
     src/core/fs.c
     src/core/io.c 
     src/core/span.c
+    src/core/str.c
+
+    src/lexer/lexer.c
 )
 
 target_compile_options(cbb PRIVATE
