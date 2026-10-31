@@ -4,11 +4,11 @@
 #include "core/types.h"
 
 struct span {
-    u8 *start;
+    const u8 *start;
     size_t length;
 };
 
-void span_init(struct span *span, u8 *start, size_t length);
+void span_init(struct span *span, const u8 *start, size_t length);
 void span_destroy(struct span *span);
 
 

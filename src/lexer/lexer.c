@@ -5,6 +5,7 @@
 
 #include "core/str.h"
 #include "core/io.h"
+#include "core/types.h"
 
 void lexer_init(struct lexer *lexer, const char *source) {
     lexer->source = source;
@@ -28,7 +29,7 @@ static bool is_at_end(struct lexer *lexer) {
 
 static struct token create_eof(struct lexer *lexer) {
     struct span span;
-    span_init(&span, lexer->source + lexer->start, lexer->current - lexer->start);
+    span_init(&span, (const u8 *)(lexer->source + lexer->start), lexer->current - lexer->start);
     return (struct token){ .type = TK_EOF, .span = span, .column = lexer->column, .line = lexer->line };
 }
 
@@ -65,7 +66,7 @@ static void skip_whitespace(struct lexer *lexer) {
 
 static struct token new_token(struct lexer *lexer, enum tokentype type) {
     struct span span;
-    span_init(&span, lexer->source + lexer->start, lexer->current - lexer->start);
+    span_init(&span, (const u8 *)(lexer->source + lexer->start), lexer->current - lexer->start);
     return (struct token){ .type = type, .span = span, .column = lexer->start_column, .line = lexer->line };
 }
 
