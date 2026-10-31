@@ -9,7 +9,11 @@
 
     va_start(args, fmt);
 
+    fprintf(stderr, "fatal: %s:%d", __FILE__, __LINE__);
+    
     vfprintf(stderr, fmt, args);
+
+    fprintf(stderr, "\n");
 
     va_end(args);
 

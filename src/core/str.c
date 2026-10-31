@@ -12,7 +12,7 @@ void dyn_string_init(struct dyn_string *str) {
     str->data_ = malloc(sizeof(char) * str->capacity_);
     if (!str->data_) {
         // no return
-        fatal_error("memory allocation failure\n");
+        fatal_error("memory allocation failure");
     }
     str->data_[str->size_] = '\0';
 }
@@ -30,7 +30,7 @@ static void reallocate(struct dyn_string *str, size_t new_cap) {
     char *tmp = realloc(str->data_, new_cap);
     if (!tmp) {
         // no return
-        fatal_error("memory allocation failure\n");
+        fatal_error("memory allocation failure");
     }
 
     str->data_ = tmp;

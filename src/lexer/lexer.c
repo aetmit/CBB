@@ -1,9 +1,10 @@
 #include "lexer/lexer.h"
 
-#include <string.h>
 #include <ctype.h>
+#include <string.h>
 
 #include "core/str.h"
+#include "core/io.h"
 
 void lexer_init(struct lexer *lexer, const char *source) {
     lexer->source = source;
@@ -28,7 +29,7 @@ static bool is_at_end(struct lexer *lexer) {
 static struct token create_eof(struct lexer *lexer) {
     struct span span;
     span_init(&span, lexer->source + lexer->start, lexer->current - lexer->start);
-    return (struct token){ .type = TK_EOF, .span = span, .column = lexer->start_column, .line = lexer->line };
+    return (struct token){ .type = TK_EOF, .span = span, .column = lexer->column, .line = lexer->line };
 }
 
 static char peek(struct lexer *lexer) {
@@ -68,19 +69,19 @@ static struct token new_token(struct lexer *lexer, enum tokentype type) {
     return (struct token){ .type = type, .span = span, .column = lexer->start_column, .line = lexer->line };
 }
 
-static struct keyword_entry {
+struct keyword_entry {
     const char *lexeme;
     enum tokentype value;
 };
 
-static constexpr int keyword_count = 1;
-
-static struct keyword_entry keywords[1] = {
-    (struct keyword_entry){ .lexeme = "int", .value = TK_INT },
+static const struct keyword_entry keywords[] = {
+    { .lexeme = "int", .value = TK_INT },
 };
 
+static const size_t keyword_count = sizeof(keywords) / sizeof(keywords[0]);
+
 static enum tokentype get_keyword(const char *s) {
-    for (int i = 0; i < keyword_count; ++i) {
+    for (size_t i = 0; i < keyword_count; ++i) {
         if (strcmp(s, keywords[i].lexeme) == 0) {
             return keywords[i].value;
         }
@@ -136,11 +137,12 @@ struct token lexer_next(struct lexer *lexer) {
                 while (!is_at_end(lexer) && isdigit((unsigned char)peek(lexer))) {
                     advance(lexer);
                 }
+                return new_token(lexer, TK_INTEGER_LITERAL);
             } else if (isalpha((unsigned char)c) || c == '_') {
                 struct dyn_string str;
                 dyn_string_init(&str);
 
-                while (!is_at_end(lexer) && (isalnum((unsigned char)peek(lexer))) || peek(lexer) == '_') {
+                while (!is_at_end(lexer) && (isalnum((unsigned char)peek(lexer)) || peek(lexer) == '_')) {
                     dyn_string_push_back(&str, peek(lexer));
                     advance(lexer);
                 }
@@ -152,6 +154,9 @@ struct token lexer_next(struct lexer *lexer) {
                 dyn_string_destroy(&str);
 
                 return new_token(lexer, type);
+            } else {
+                // to be fixed in the future
+                fatal_error("currently abort when unknown character is encountered");
             }
     }
 }
