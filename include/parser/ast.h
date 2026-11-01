@@ -14,6 +14,9 @@ struct nodeid {
 
 #define NODEID(id) (struct nodeid){ .value = id }
 
+struct expr;
+struct stmt;
+
 enum exprtag {
     EX_LITERAL,
     EX_BINARY,
@@ -103,9 +106,13 @@ enum stmttag {
     STMT_ERROR,
 };
 
-struct block {
+struct block_list {
     struct stmt **body;
     size_t length;
+};
+
+struct block {
+    struct block_list stmts;
 };
 
 struct exprstmt {
@@ -122,6 +129,7 @@ struct stmttype {
     union {
         struct block block;
         struct exprstmt exprstmt;
+        struct vardecl vardecl;
     } as;
 };
 
@@ -132,8 +140,7 @@ struct stmt {
 };
 
 struct program {
-    struct stmt **body;
-    size_t length;
+    struct block_list body;
     struct arena arena;
 };
 
