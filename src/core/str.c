@@ -7,6 +7,9 @@
 #define DYN_STRING_INIT_CAP 16
 
 void dyn_string_init(struct dyn_string *str) {
+    if (!str) {
+        return;
+    }
     str->capacity_ = DYN_STRING_INIT_CAP;
     str->size_ = 0;
     str->data_ = malloc(sizeof(char) * str->capacity_);
@@ -18,6 +21,9 @@ void dyn_string_init(struct dyn_string *str) {
 }
 
 void dyn_string_destroy(struct dyn_string *str) {
+    if (!str) {
+        return;
+    }
     str->size_ = 0;
     str->capacity_ = 0;
     if (str->data_) {
@@ -38,6 +44,9 @@ static void reallocate(struct dyn_string *str, size_t new_cap) {
 }
 
 void dyn_string_push_back(struct dyn_string *str, char c) {
+    if (!str) {
+        return;
+    }
     if (str->size_ + 1 >= str->capacity_) {
         reallocate(str, str->capacity_ * 2);
     }
@@ -47,5 +56,8 @@ void dyn_string_push_back(struct dyn_string *str, char c) {
 }
 
 char *dyn_string_c_str(struct dyn_string *str) {
+    if (!str) {
+        return nullptr;
+    }
     return str->data_;
 }

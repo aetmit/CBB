@@ -8,6 +8,9 @@
 #include "core/types.h"
 
 void lexer_init(struct lexer *lexer, const char *source) {
+    if (!lexer) {
+        return;
+    }
     lexer->source = source;
 
     lexer->column = 0;
@@ -20,6 +23,9 @@ void lexer_init(struct lexer *lexer, const char *source) {
 }
 
 void lexer_destroy(struct lexer *lexer) {
+    if (!lexer) {
+        return;
+    }
     lexer->source = nullptr;
 }
 
@@ -91,6 +97,9 @@ static enum tokentype get_keyword(const char *s) {
 }
 
 struct token lexer_next(struct lexer *lexer) {
+    if (!lexer) {
+        return (struct token){};
+    }
     skip_whitespace(lexer);
 
     if (is_at_end(lexer)) {

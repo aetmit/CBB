@@ -32,6 +32,9 @@ static struct arena_node *alloc_node(size_t capacity) {
 }
 
 void arena_init(struct arena *arena) {
+    if (!arena) {
+        return;
+    }
     struct arena_node *node = alloc_node(INIT_BLOCK_SIZE);
 
     arena->current = node;
@@ -39,6 +42,9 @@ void arena_init(struct arena *arena) {
 }
 
 void arena_destroy(struct arena *arena) {
+    if (!arena) {
+        return;
+    }
     struct arena_node *node = arena->head;
     while (node) {
         free(node->data);
@@ -56,6 +62,10 @@ static uintptr_t align_up(uintptr_t address, size_t alignment) {
 }
 
 void *arena_alloc(struct arena *arena, size_t size, size_t alignment) {
+    if (!arena) {
+        return nullptr;
+    }
+
     if (size == 0) {
         size = 1;
     }
