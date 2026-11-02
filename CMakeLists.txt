@@ -1,31 +1,24 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(cbb LANGUAGES C)
+project(cbb LANGUAGES CXX)
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build." FORCE)
 endif()
 
-set(CMAKE_C_STANDARD 23)
-set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_C_EXTENSIONS OFF)
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_executable(cbb
-    src/main.c
+    src/main.cpp
 
-    src/core/fs.c
-    src/core/io.c 
-    src/core/span.c
-    src/core/str.c
-    src/core/vector.c
-    src/core/diagnostic.c
-
-    src/lexer/lexer.c
 )
 
 target_compile_options(cbb PRIVATE
     -Wall
     -Wextra
+    -Wpedantic
 )
 
 target_include_directories(cbb PRIVATE
