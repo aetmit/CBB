@@ -18,7 +18,8 @@ namespace core {
 
 template<typename ...Args>
 [[noreturn]] void fatalError(std::string_view location, std::format_string<Args...> fmt, Args&&... args) {
-    std::cerr << location;
+    std::cerr << "fatal error: "
+    std::cerr << location << ": ";
     std::cerr << std::format(fmt, std::forward<Args>(args)...) << '\n';
 
     std::exit(EXIT_FAILURE);

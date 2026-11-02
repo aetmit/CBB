@@ -11,7 +11,7 @@ using namespace core;
 
 int run(int argc, const char *argv[]) {
     if (argc < 2) {
-        FATAL(LOCATION, "no input files");
+        FATAL("no input files");
     }
 
     FileReader reader; 
@@ -22,7 +22,7 @@ int run(int argc, const char *argv[]) {
     if (result) {
         file = *result;
     } else {
-        FATAL(LOCATION, "failed to read file");
+        FATAL("failed to read file");
     }
 
     return 0;
