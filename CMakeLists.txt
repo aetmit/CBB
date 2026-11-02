@@ -12,6 +12,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_executable(cbb
     src/main.cpp
+    src/cbb.cpp
+
+    src/core/file.cpp
 
 )
 

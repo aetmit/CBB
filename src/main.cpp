@@ -1,8 +1,10 @@
 #include <iostream>
 
+#include "cbb.hpp"
+
 int main(int argc, const char *argv[]) {
 
-    std::cout << "hello world\n";
+    int exit = cbb::run(argc, argv);
 
-    return 0;
+    return exit;
 }
