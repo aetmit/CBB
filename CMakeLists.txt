@@ -17,6 +17,8 @@ add_executable(cbb
     src/core/io.c 
     src/core/span.c
     src/core/str.c
+    src/core/vector.c
+    src/core/diagnostic.c
 
     src/lexer/lexer.c
 )
