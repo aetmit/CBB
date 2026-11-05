@@ -6,7 +6,7 @@ namespace cbb {
 
 namespace core {
 
-std::optional<std::string> FileReader::readFile(const std::string &path) {
+std::optional<std::string> file_reader::read_file(const std::string &path) {
     std::ifstream file(path, std::ios::binary | std::ios::ate);
 
     if (!file) {

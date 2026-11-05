@@ -8,9 +8,9 @@ namespace cbb {
 
 namespace core {
 
-class FileReader {
+class file_reader {
 public:
-    std::optional<std::string> readFile(const std::string &path);
+    std::optional<std::string> read_file(const std::string &path);
 };
 
 } // namespace core

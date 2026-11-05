@@ -17,15 +17,15 @@ namespace core {
 #define LOCATION __FILE__ ":" TOSTRING(__LINE__)
 
 template<typename ...Args>
-[[noreturn]] void fatalError(std::string_view location, std::format_string<Args...> fmt, Args&&... args) {
-    std::cerr << "fatal error: "
+[[noreturn]] void fatal_error(std::string_view location, std::format_string<Args...> fmt, Args&&... args) {
+    std::cerr << "fatal error: ";
     std::cerr << location << ": ";
     std::cerr << std::format(fmt, std::forward<Args>(args)...) << '\n';
 
     std::exit(EXIT_FAILURE);
 }
 
-#define FATAL(...) fatalError(LOCATION, __VA_ARGS__)
+#define FATAL(...) ::cbb::core::fatal_error(LOCATION, __VA_ARGS__)
 
 } // namespace core
 

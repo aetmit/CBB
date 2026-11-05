@@ -15,7 +15,10 @@ add_executable(cbb
     src/cbb.cpp
 
     src/core/file.cpp
+    src/core/span.cpp
 
+    src/lexer/lexer.cpp 
+    src/lexer/token.cpp 
 )
 
 target_compile_options(cbb PRIVATE
