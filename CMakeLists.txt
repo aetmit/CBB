@@ -16,6 +16,7 @@ add_executable(cbb
 
     src/core/file.cpp
     src/core/span.cpp
+    src/core/arena.cpp
 
     src/lexer/lexer.cpp 
     src/lexer/token.cpp 
