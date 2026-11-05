@@ -20,6 +20,8 @@ add_executable(cbb
 
     src/lexer/lexer.cpp 
     src/lexer/token.cpp 
+
+    src/parser/ast.cpp
 )
 
 target_compile_options(cbb PRIVATE

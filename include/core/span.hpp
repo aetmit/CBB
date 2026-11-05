@@ -21,6 +21,15 @@ private:
     std::size_t offset_;
     std::size_t length_;
 };
+
+template<typename T>
+struct spanned {
+public:
+    T node;
+    span span;
+
+    spanned(T node, class span span): node(node), span(span) {}
+};
     
 } // namespace core
 
