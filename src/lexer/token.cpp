@@ -18,6 +18,7 @@ std::ostream &operator<<(std::ostream &os, const token &token) {
     os << token.column;
     os << "\nline: ";
     os << token.line;
+    os << "\n";
 
     return os;
 }

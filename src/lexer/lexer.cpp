@@ -65,7 +65,7 @@ token lexer::next() {
                     advance();
                 }
                 return create_token(token_type::int_);
-            } else if (std::isalpha(static_cast<unsigned char>(c) || c == '_')) {
+            } else if (std::isalpha(static_cast<unsigned char>(c)) || c == '_') {
                 std::string lexeme;
                 while (!is_at_end() && (std::isalnum(static_cast<unsigned char>(peek())) || peek() == '_')) {
                     lexeme.push_back(peek());
@@ -74,7 +74,7 @@ token lexer::next() {
                 token_type identifier_type = get_identifier_type(lexeme);
                 return create_token(identifier_type);
             } else {
-                FATAL("handle this");
+                FATAL("handle this: {}", static_cast<int>(c));
             }
     }
 }
@@ -104,7 +104,7 @@ char lexer::peek() const {
     if (is_at_end()) {
         return eof_char_;
     }
-    return source_[source_.size()];
+    return source_[current_];
 }
 
 char lexer::advance() {
