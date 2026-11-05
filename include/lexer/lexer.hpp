@@ -33,7 +33,7 @@ public:
         reference operator*();
 
         iterator &operator++();
-        iterator &operator++(int);
+        iterator operator++(int);
 
         pointer operator->();
 

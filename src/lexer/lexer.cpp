@@ -15,13 +15,13 @@ lexer::lexer(std::string_view source): source_(source), current_(0), start_(0), 
 
 token lexer::next() {
     if (is_at_end()) {
-        return token(token_type::eof, core::span(start_, current_ - start_), start_column_, line_);
+        return token(token_type::eof, core::span(current_, 0), column_, line_);
     }
 
     skip_whitespace();
 
     if (is_at_end()) {
-        return token(token_type::eof, core::span(start_, current_ - start_), start_column_, line_);
+        return token(token_type::eof, core::span(current_, 0), column_, line_);
     }
 
     start_ = current_;
@@ -138,7 +138,7 @@ lexer::iterator &lexer::iterator::operator++() {
     return *this;
 }
 
-lexer::iterator &lexer::iterator::operator++(int) {
+lexer::iterator lexer::iterator::operator++(int) {
     iterator &tmp = *this;
     ++(*this);
     return tmp;
