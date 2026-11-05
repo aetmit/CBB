@@ -5,6 +5,8 @@
 #include "core/file.hpp"
 #include "core/error.hpp"
 
+#include "lexer/lexer.hpp"
+
 namespace cbb {
 
 int run(int argc, const char *argv[]) {
@@ -21,6 +23,12 @@ int run(int argc, const char *argv[]) {
         file = *result;
     } else {
         FATAL("failed to read file");
+    }
+
+    lexer::lexer tokenstream(file);
+    
+    for (auto it = tokenstream.begin(); it != tokenstream.end(); ++it) {
+        std::cout << *it << "\n";
     }
 
     return 0;

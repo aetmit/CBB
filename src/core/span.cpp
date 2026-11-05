@@ -15,6 +15,14 @@ std::size_t span::offset() const {
 std::size_t span::length() const {
     return length_;
 }
+
+bool span::operator==(const span &other) const {
+    return offset_ == other.offset() && length_ == other.length();
+}
+
+bool span::operator!=(const span &other) const {
+    return !(*this == other);
+}
     
 } // namespace core
 

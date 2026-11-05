@@ -4,6 +4,7 @@
 #include <string_view>
 #include <array>
 #include <algorithm>
+#include <iterator>
 
 #include <cstddef>
 
@@ -17,7 +18,38 @@ class lexer {
 public:
     lexer(std::string_view source);
     
-    token next();
+    struct sentinal {};
+    class iterator {
+    public: 
+        iterator(lexer *lexer, token current); 
+
+        using reference = token&;
+        using pointer = token*;
+        using value_type = token;
+        using iterator_category = std::input_iterator_tag;
+        using iterator_concept  = std::input_iterator_tag;
+        using difference_type = std::ptrdiff_t;
+
+        reference operator*();
+
+        iterator &operator++();
+        iterator &operator++(int);
+
+        pointer operator->();
+
+        bool operator==(const iterator &other) const;
+        bool operator!=(const iterator &other) const;
+
+        friend bool operator==(const iterator &it, sentinal);
+
+    private:
+        lexer *lexer_;
+        token current_;
+    };
+
+    iterator begin();
+    sentinal end();
+
 private:
     std::string_view source_;
 
@@ -26,6 +58,8 @@ private:
     std::size_t line_;
     std::size_t column_;
     std::size_t start_column_;
+
+    token next();
 
     bool is_at_end() const;
     void skip_whitespace();

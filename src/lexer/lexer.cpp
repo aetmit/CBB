@@ -126,6 +126,47 @@ char lexer::advance() {
 bool lexer::is_at_end() const {
     return current_ >= source_.size(); 
 }
+
+lexer::iterator::iterator(lexer *lexer, token current): lexer_(lexer), current_(current) {}
+
+lexer::iterator::reference lexer::iterator::operator*() {
+    return current_;
+}
+
+lexer::iterator &lexer::iterator::operator++() {
+    current_ = lexer_->next();
+    return *this;
+}
+
+lexer::iterator &lexer::iterator::operator++(int) {
+    iterator &tmp = *this;
+    ++(*this);
+    return tmp;
+}
+
+bool lexer::iterator::operator==(const iterator &other) const {
+    return lexer_ == other.lexer_ && current_ == other.current_;
+}
+
+bool lexer::iterator::operator!=(const iterator &other) const {
+    return !(*this == other);
+}
+
+lexer::iterator lexer::begin() {
+    return iterator(this, next());
+}
+
+lexer::sentinal lexer::end() {  
+    return {};
+}
+
+lexer::iterator::pointer lexer::iterator::operator->() {
+    return &current_;
+}
+
+bool operator==(const lexer::iterator &it, lexer::sentinal) {
+    return it.current_.type == token_type::eof;
+}
     
 } // namespace lexer
 

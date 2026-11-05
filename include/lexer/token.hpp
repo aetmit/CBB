@@ -2,6 +2,7 @@
 #define CBB_LEXER_TOKEN_HPP
 
 #include <string_view>
+#include <ostream>
 
 #include <cstddef>
 
@@ -44,7 +45,13 @@ struct token {
     std::size_t line;
     
     token(token_type type, core::span span, std::size_t column, std::size_t line);
+
+    bool operator==(const token &other) const;
+    bool operator!=(const token &other) const;
 };
+
+std::ostream &operator<<(std::ostream &os, const token &token);
+std::ostream &operator<<(std::ostream &os, const token_type &type);
     
 } // namespace lexer
 

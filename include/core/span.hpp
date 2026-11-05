@@ -14,6 +14,9 @@ public:
 
     std::size_t offset() const;
     std::size_t length() const;
+
+    bool operator==(const span &other) const;
+    bool operator!=(const span &other) const;
 private:
     std::size_t offset_;
     std::size_t length_;
