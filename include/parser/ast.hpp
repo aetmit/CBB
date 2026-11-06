@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string_view>
+#include <memory>
 
 #include <cstddef>
 #include <cstdint>
@@ -17,7 +18,7 @@ namespace parser {
 struct nodeid {
     std::size_t value;
 
-    explicit nodeid(std::size_t value);    
+    explicit constexpr nodeid(std::size_t value): value(value) {}
 };
 
 struct expr;
@@ -29,6 +30,8 @@ enum class expr_type {
     literal,
     variable,
     var_assign,
+
+    error,
 };
 
 enum class literal_type {
@@ -74,8 +77,7 @@ struct binary {
 
 struct unary {
     binop op;
-    expr *left;
-    expr *right;
+    expr *operand;
 };
 
 struct expr {
@@ -89,10 +91,18 @@ struct expr {
         variable variable;
         var_assign var_assign;
     } as;
+
+    expr(nodeid id, core::span span, literal literal);
+    expr(nodeid id, core::span span, binary binary);
+    expr(nodeid id, core::span span, unary unary);
+    expr(nodeid id, core::span span, variable variable);
+    expr(nodeid id, core::span span, var_assign var_assign);
+    expr(nodeid id, core::span span);
 };
 
 enum class stmt_type {
     exprstmt,
+    var_decl,
 };
 
 struct exprstmt {
@@ -119,6 +129,7 @@ struct var_decl {
 struct stmt {
     stmt_type type;
     core::span span;
+    nodeid id;
     union {
         exprstmt exprstmt;
         var_decl var_decl;
@@ -126,9 +137,8 @@ struct stmt {
 };
 
 struct program {
-    core::arena arena;
-    nodeid id;
-    std::vector<stmt> body;
+    std::unique_ptr<core::arena> arena;
+    std::vector<stmt*> body;
 };
 
 } // namespace parser

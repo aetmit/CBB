@@ -23,19 +23,19 @@ public:
     public: 
         iterator(lexer *lexer, token current); 
 
-        using reference = token&;
-        using pointer = token*;
+        using reference = const token&;
+        using pointer = const token*;
         using value_type = token;
         using iterator_category = std::input_iterator_tag;
         using iterator_concept  = std::input_iterator_tag;
         using difference_type = std::ptrdiff_t;
 
-        reference operator*();
+        reference operator*() const;
 
         iterator &operator++();
         iterator operator++(int);
 
-        pointer operator->();
+        pointer operator->() const;
 
         bool operator==(const iterator &other) const;
         bool operator!=(const iterator &other) const;

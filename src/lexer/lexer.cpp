@@ -129,7 +129,7 @@ bool lexer::is_at_end() const {
 
 lexer::iterator::iterator(lexer *lexer, token current): lexer_(lexer), current_(current) {}
 
-lexer::iterator::reference lexer::iterator::operator*() {
+lexer::iterator::reference lexer::iterator::operator*() const {
     return current_;
 }
 
@@ -160,7 +160,7 @@ lexer::sentinal lexer::end() {
     return {};
 }
 
-lexer::iterator::pointer lexer::iterator::operator->() {
+lexer::iterator::pointer lexer::iterator::operator->() const {
     return &current_;
 }
 

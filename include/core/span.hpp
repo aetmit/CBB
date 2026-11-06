@@ -29,6 +29,7 @@ public:
     span span;
 
     spanned(T node, class span span): node(node), span(span) {}
+    spanned() = default;
 };
     
 } // namespace core
