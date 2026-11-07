@@ -64,7 +64,7 @@ token lexer::next() {
                 while (!is_at_end() && std::isdigit(static_cast<unsigned char>(peek()))) {
                     advance();
                 }
-                return create_token(token_type::int_);
+                return create_token(token_type::integer_literal);
             } else if (std::isalpha(static_cast<unsigned char>(c)) || c == '_') {
                 std::string lexeme;
                 while (!is_at_end() && (std::isalnum(static_cast<unsigned char>(peek())) || peek() == '_')) {

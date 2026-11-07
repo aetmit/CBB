@@ -30,6 +30,13 @@ int run(int argc, const char *argv[]) {
 
     parser::parser parser(file, diagnostics);
     auto ast = parser.parse();
+
+    if (!diagnostics.empty()) {
+        core::diagnostic_formatter formatter(file);
+        for (auto it = diagnostics.begin(); it != diagnostics.end(); ++it) {
+            std::cout << formatter.format(*it) << "\n";
+        }
+    }
     std::cout << ast;
 
     return 0;
