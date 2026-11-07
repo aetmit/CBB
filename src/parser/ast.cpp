@@ -31,6 +31,14 @@ var_decl::var_decl(std::string_view name, type_syntax type_annotation, expr *ini
 
 binary::binary(binop op, expr *left, expr *right): op(op), left(left), right(right) {}
 
+literal::literal(std::uint64_t value): value(std::in_place_type<std::uint64_t>, value) {}
+
+unary::unary(unaryop op, expr *operand): op(op), operand(operand) {}
+
+exprstmt::exprstmt(struct expr *expr): expr(expr) {}
+
+block::block(std::vector<stmt*> body): body(body) {}
+
 } // namespace parser
 
 } // namespace cbb

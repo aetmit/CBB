@@ -82,7 +82,7 @@ stmt *parser::parse_block() {
         return stmt;
     }
 
-    block block = { .body = stmts };
+    block block(stmts);
 
     stmt *stmt = alloc_stmt(start_span.join(end_token.span), block);
     return stmt;
@@ -189,7 +189,7 @@ bool parser::is_builtin_type(lexer::token_type type) const {
 stmt *parser::parse_stmtexpr() {
     expr *expr = parse_expression();
 
-    exprstmt exprstmt = { .expr = expr };
+    exprstmt exprstmt(expr);
 
     stmt *stmt = alloc_stmt(expr->span, exprstmt);
 
@@ -272,7 +272,7 @@ expr *parser::parse_unary() {
 
         expr *operand = parse_unary();
 
-        unary unary = { .op = core::spanned(unaryop_type::negate, op_span), .operand = operand };
+        unary unary(core::spanned(unaryop_type::negate, op_span), operand);
 
         expr *expr = alloc_expr(operand->span.join(op_span), unary);
 
@@ -298,7 +298,7 @@ expr *parser::parse_primary() {
             FATAL("integer literal out of range");
         }
 
-        literal literal = { .type = literal_type::integer, .as = { .integer = value }};
+        literal literal(value);
 
         advance();
 

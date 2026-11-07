@@ -25,15 +25,10 @@ struct nodeid {
 struct expr;
 struct stmt;
 
-enum class literal_type {
-    integer,
-};
-
 struct literal {
-    literal_type type;
-    union {
-        std::uint64_t integer;
-    } as;
+    std::variant<std::uint64_t> value;
+
+    explicit literal(std::uint64_t value);
 };
 
 struct variable {
@@ -71,6 +66,8 @@ struct binary {
 struct unary {
     unaryop op;
     expr *operand;
+
+    unary(unaryop op, expr *operand);
 };
 
 struct expr {
@@ -89,6 +86,8 @@ struct expr {
 
 struct exprstmt {
     expr *expr;
+
+    explicit exprstmt(struct expr *expr);
 };
 
 enum class type_syntax_type {
@@ -115,6 +114,8 @@ struct var_decl {
 
 struct block {
     std::vector<stmt*> body;    
+
+    explicit block(std::vector<stmt*> body);
 };
 
 struct stmt {
