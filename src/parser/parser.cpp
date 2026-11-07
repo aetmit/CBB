@@ -29,7 +29,6 @@ program parser::parse() {
 
     arena_ = &arena;
 
-    current_ = tokenstream_.begin();
     while (current_ != tokenstream_.end()) {
         stmts.push_back(parse_statement());
     }

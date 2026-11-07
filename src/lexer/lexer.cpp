@@ -139,7 +139,7 @@ lexer::iterator &lexer::iterator::operator++() {
 }
 
 lexer::iterator lexer::iterator::operator++(int) {
-    iterator &tmp = *this;
+    iterator tmp = *this;
     ++(*this);
     return tmp;
 }
