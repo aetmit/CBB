@@ -37,7 +37,8 @@ int run(int argc, const char *argv[]) {
             std::cout << formatter.format(*it) << "\n";
         }
     }
-    std::cout << ast;
+    parser::ast_formatter formatter;
+    std::cout << formatter.format(ast) << "\n";
 
     return 0;
 }

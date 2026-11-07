@@ -2,6 +2,7 @@
 #define CBB_PARSER_AST_HPP
 
 #include <vector>
+#include <string>
 #include <string_view>
 #include <memory>
 #include <variant>
@@ -150,6 +151,20 @@ std::ostream &operator<<(std::ostream &os, const binaryop_type &binaryop_type);
 std::ostream &operator<<(std::ostream &os, const var_assign &var_assign);
 std::ostream &operator<<(std::ostream &os, const variable &variable);
 std::ostream &operator<<(std::ostream &os, const literal &literal);
+
+class ast_formatter {
+public:
+    ast_formatter() = default;
+
+    std::string format(const program &program);
+
+private:
+    void write_indent(std::ostream &os, std::size_t indent) const;
+    void write_span(std::ostream &os, const core::span &span) const;
+    void format_type_syntax(std::ostream &os, const type_syntax &type, std::size_t indent) const;
+    void format_expression(std::ostream &os, const expr *expression, std::size_t indent) const;
+    void format_statement(std::ostream &os, const stmt *statement, std::size_t indent) const;
+};
 
 
 } // namespace parser
