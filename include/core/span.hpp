@@ -2,8 +2,11 @@
 #define CBB_CORE_SPAN_HPP
 
 #include <string_view>
+#include <ostream>
 
 #include <cstddef>
+
+#include "core/concepts.hpp"
 
 namespace cbb {
 
@@ -37,6 +40,8 @@ private:
     std::size_t length_;
 };
 
+std::ostream &operator<<(std::ostream &os, const span &span);
+
 template<class T>
 struct spanned {
 public:
@@ -46,6 +51,13 @@ public:
     spanned(T node, class span span): node(node), span(span) {}
     spanned() = default;
 };
+
+template<class T>
+requires core::writable_to_stream<T>
+std::ostream &operator<<(std::ostream &os, const spanned<T> &obj) {
+    os << "spanned<T> {\nnode: " << obj.node << "\nspan: " << obj.span << "\n}\n";
+    return os;
+}
     
 } // namespace core
 

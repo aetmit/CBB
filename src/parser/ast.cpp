@@ -39,6 +39,117 @@ exprstmt::exprstmt(struct expr *expr): expr(expr) {}
 
 block::block(std::vector<stmt*> body): body(body) {}
 
+std::ostream &operator<<(std::ostream &os, const nodeid &id) {
+    return os << id.value;
+}
+
+std::ostream &operator<<(std::ostream &os, const binaryop_type &op) {
+    switch (op) {
+        case binaryop_type::add: return os << "+";
+        case binaryop_type::sub: return os << "-";
+        case binaryop_type::mul: return os << "*";
+        case binaryop_type::div: return os << "/";
+    }
+
+    return os << "<invalid binary operator>";
+}
+
+std::ostream &operator<<(std::ostream &os, const unaryop_type &op) {
+    switch (op) {
+        case unaryop_type::negate: return os << "-";
+    }
+
+    return os << "<invalid unary operator>";
+}
+
+std::ostream &operator<<(std::ostream &os, const literal &literal) {
+    return std::visit([&](const auto &value) -> std::ostream& {
+        return os << value;
+    }, literal.value);
+}
+
+std::ostream &operator<<(std::ostream &os, const variable &variable) {
+    return os << variable.name;
+}
+
+std::ostream &operator<<(std::ostream &os, const var_assign &assign) {
+    return os << *assign.target << " = " << *assign.value;
+}
+
+std::ostream &operator<<(std::ostream &os, const binary &binary) {
+    return os << "(" << *binary.left << " "
+              << binary.op.node << " "
+              << *binary.right << ")";
+}
+
+std::ostream &operator<<(std::ostream &os, const unary &unary) {
+    return os << unary.op.node << *unary.operand;
+}
+
+std::ostream &operator<<(std::ostream &os, const exprstmt &exprstmt) {
+    return os << *exprstmt.expr << ";";
+}
+
+std::ostream &operator<<(std::ostream &os, const type_syntax &type) {
+    switch (type.type) {
+        case type_syntax_type::int_:
+            return os << "int";
+    }
+
+    return os << "<invalid type>";
+}
+
+std::ostream &operator<<(std::ostream &os, const var_decl &decl) {
+    os << decl.type_annotation << " " << decl.name;
+
+    if (decl.initialiser != nullptr)
+        os << " = " << *decl.initialiser;
+
+    return os << ";";
+}
+
+std::ostream &operator<<(std::ostream &os, const block &block) {
+    os << "{\n";
+
+    for (const stmt *stmt : block.body) {
+        os << "    " << *stmt << "\n";
+    }
+
+    return os << "}";
+}
+
+std::ostream &operator<<(std::ostream &os, const stmt &stmt) {
+    return std::visit([&](const auto &value) -> std::ostream& {
+        using T = std::decay_t<decltype(value)>;
+
+        if constexpr (std::is_same_v<T, std::monostate>) {
+            return os << "<empty statement>";
+        } else {
+            return os << value;
+        }
+    }, stmt.value);
+}
+
+std::ostream &operator<<(std::ostream &os, const expr &expr) {
+    return std::visit([&](const auto &value) -> std::ostream& {
+        using T = std::decay_t<decltype(value)>;
+
+        if constexpr (std::is_same_v<T, std::monostate>) {
+            return os << "<empty expression>";
+        } else {
+            return os << value;
+        }
+    }, expr.value);
+}
+
+std::ostream &operator<<(std::ostream &os, const program &program) {
+    for (const stmt *stmt : program.body) {
+        os << *stmt << "\n";
+    }
+
+    return os;
+}
+
 } // namespace parser
 
 } // namespace cbb

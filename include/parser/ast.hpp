@@ -5,6 +5,7 @@
 #include <string_view>
 #include <memory>
 #include <variant>
+#include <ostream>
 
 #include <cstddef>
 #include <cstdint>
@@ -134,6 +135,22 @@ struct program {
     std::unique_ptr<core::arena> arena;
     std::vector<stmt*> body;
 };
+
+std::ostream &operator<<(std::ostream &os, const program &program);
+std::ostream &operator<<(std::ostream &os, const stmt &stmt);
+std::ostream &operator<<(std::ostream &os, const expr &expr);
+std::ostream &operator<<(std::ostream &os, const block &block);
+std::ostream &operator<<(std::ostream &os, const var_decl &var_decl);
+std::ostream &operator<<(std::ostream &os, const type_syntax &type_syntax);
+std::ostream &operator<<(std::ostream &os, const exprstmt &exprstmt);
+std::ostream &operator<<(std::ostream &os, const unary &unary);
+std::ostream &operator<<(std::ostream &os, const binary &binary);
+std::ostream &operator<<(std::ostream &os, const unaryop_type &unaryop_type);
+std::ostream &operator<<(std::ostream &os, const binaryop_type &binaryop_type);
+std::ostream &operator<<(std::ostream &os, const var_assign &var_assign);
+std::ostream &operator<<(std::ostream &os, const variable &variable);
+std::ostream &operator<<(std::ostream &os, const literal &literal);
+
 
 } // namespace parser
 

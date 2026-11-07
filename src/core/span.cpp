@@ -29,6 +29,12 @@ bool span::operator==(const span &other) const {
 bool span::operator!=(const span &other) const {
     return !(*this == other);
 }
+
+std::ostream &operator<<(std::ostream &os, const span &span) {
+    os << "span {\noffset: " << span.offset() << "\nlength: " << span.length() << "\n}\n";
+
+    return os;
+}
     
 } // namespace core
 
