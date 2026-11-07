@@ -4,6 +4,7 @@
 #include <vector>
 #include <string_view>
 #include <memory>
+#include <variant>
 
 #include <cstddef>
 #include <cstdint>
@@ -23,16 +24,6 @@ struct nodeid {
 
 struct expr;
 struct stmt;
-
-enum class expr_type {
-    binary,
-    unary,
-    literal,
-    variable,
-    var_assign,
-
-    error,
-};
 
 enum class literal_type {
     integer,
@@ -73,24 +64,20 @@ struct binary {
     binop op;
     expr *left;
     expr *right;
+
+    binary(binop op, expr *left, expr *right);
 };
 
 struct unary {
-    binop op;
+    unaryop op;
     expr *operand;
 };
 
 struct expr {
     nodeid id;
-    expr_type type;
     core::span span;
-    union {
-        literal literal;
-        binary binary;
-        unary unary;
-        variable variable;
-        var_assign var_assign;
-    } as;
+
+    std::variant<literal, binary, unary, variable, var_assign, std::monostate> value;
 
     expr(nodeid id, core::span span, literal literal);
     expr(nodeid id, core::span span, binary binary);
@@ -100,23 +87,21 @@ struct expr {
     expr(nodeid id, core::span span);
 };
 
-enum class stmt_type {
-    exprstmt,
-    var_decl,
-};
-
 struct exprstmt {
     expr *expr;
 };
 
 enum class type_syntax_type {
-    name,
+    // name,
+    
+    // no additional data is needed if the type is int
+    int_,
 };
 
 struct type_syntax {
     type_syntax_type type;
     union {
-        std::string_view name;
+        // std::string_view name;
     } as;
 };
 
@@ -124,16 +109,24 @@ struct var_decl {
     std::string_view name;
     type_syntax type_annotation;
     expr *initialiser;
+
+    var_decl(std::string_view name, type_syntax type_annotation, expr *initialiser);
+};
+
+struct block {
+    std::vector<stmt*> body;    
 };
 
 struct stmt {
-    stmt_type type;
-    core::span span;
     nodeid id;
-    union {
-        exprstmt exprstmt;
-        var_decl var_decl;
-    } as;
+    core::span span;
+
+    std::variant<std::monostate, exprstmt, var_decl, block> value;
+
+    stmt(nodeid id, core::span span, exprstmt exprstmt);
+    stmt(nodeid id, core::span span, var_decl var_decl);
+    stmt(nodeid id, core::span span, block block);
+    stmt(nodeid id, core::span span);
 };
 
 struct program {

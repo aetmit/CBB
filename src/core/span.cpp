@@ -1,5 +1,7 @@
 #include "core/span.hpp"
 
+#include <algorithm>
+
 namespace cbb {
 
 namespace core {
@@ -8,12 +10,16 @@ span::span(): offset_(0), length_(0) {}
 
 span::span(std::size_t offset, std::size_t length): offset_(offset), length_(length) {}
 
-std::size_t span::offset() const {
-    return offset_;
+std::string_view span::retrieve_lexeme(std::string_view source) const {
+    return source.substr(offset_, length_);
 }
 
-std::size_t span::length() const {
-    return length_;
+span span::join(const span &other) const {
+    std::size_t new_offset = std::min(offset_, other.offset());
+    std::size_t new_end = std::max(end(), other.end());
+    std::size_t new_length = new_end - new_offset; 
+
+    return { new_offset, new_length };
 }
 
 bool span::operator==(const span &other) const {

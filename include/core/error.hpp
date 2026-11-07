@@ -16,7 +16,7 @@ namespace core {
 
 #define LOCATION __FILE__ ":" TOSTRING(__LINE__)
 
-template<typename ...Args>
+template<class ...Args>
 [[noreturn]] void fatal_error(std::string_view location, std::format_string<Args...> fmt, Args&&... args) {
     std::cerr << "fatal error: ";
     std::cerr << location << ": ";
@@ -26,6 +26,10 @@ template<typename ...Args>
 }
 
 #define FATAL(...) ::cbb::core::fatal_error(LOCATION, __VA_ARGS__)
+
+#define UNREACHABLE() FATAL("entered unreachable code")
+
+#define UNIMPLEMENTED() FATAL("entered unimplemented code");
 
 } // namespace core
 

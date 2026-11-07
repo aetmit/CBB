@@ -1,6 +1,8 @@
 #ifndef CBB_CORE_SPAN_HPP
 #define CBB_CORE_SPAN_HPP
 
+#include <string_view>
+
 #include <cstddef>
 
 namespace cbb {
@@ -12,8 +14,21 @@ public:
     span();
     span(std::size_t offset, std::size_t length);
 
-    std::size_t offset() const;
-    std::size_t length() const;
+    constexpr std::size_t offset() const {
+        return offset_;
+    }
+
+    constexpr std::size_t length() const {
+        return length_;
+    }
+
+    constexpr std::size_t end() const {
+        return offset() + length();
+    }
+
+    span join(const span &other) const;
+
+    std::string_view retrieve_lexeme(std::string_view source) const; 
 
     bool operator==(const span &other) const;
     bool operator!=(const span &other) const;
@@ -22,7 +37,7 @@ private:
     std::size_t length_;
 };
 
-template<typename T>
+template<class T>
 struct spanned {
 public:
     T node;
