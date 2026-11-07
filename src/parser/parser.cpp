@@ -27,10 +27,11 @@ program parser::parse() {
 
     std::vector<stmt*> stmts;
 
-    auto it = tokenstream_.begin();
-    while (it != tokenstream_.end()) {
+    arena_ = &arena;
+
+    current_ = tokenstream_.begin();
+    while (current_ != tokenstream_.end()) {
         stmts.push_back(parse_statement());
-        ++it;
     }
 
     return { std::move(arena), std::move(stmts) };
@@ -41,6 +42,7 @@ stmt *parser::parse_statement() {
         case lexer::token_type::integer_literal:
         case lexer::token_type::open_paren:
         case lexer::token_type::identifier:
+        case lexer::token_type::minus:
             return parse_stmtexpr();
         case lexer::token_type::int_:
             return parse_vardecl();
@@ -108,6 +110,7 @@ stmt *parser::parse_vardecl() {
     std::string_view identifier = ident_span.retrieve_lexeme(source_);
 
     if (peek().type == lexer::token_type::semicolon) {
+        advance();
         var_decl decl(identifier, type, nullptr);
         stmt *stmt = alloc_stmt(start_span.join(ident_span), decl);
 
@@ -152,6 +155,8 @@ type_syntax parser::parse_type() {
     if (is_builtin_type(peek().type)) {
         type_syntax_type type = get_builtin_type();
 
+        advance();
+
         type_syntax type_syntax = { .type = type };
 
         return type_syntax;
@@ -190,6 +195,19 @@ stmt *parser::parse_stmtexpr() {
     expr *expr = parse_expression();
 
     exprstmt exprstmt(expr);
+
+    if (peek().type != lexer::token_type::semicolon) {
+        core::span span = peek().span;
+
+        error("expected ';'", span);
+        sync();
+        
+        stmt *stmt = alloc_stmt(span);
+
+        return stmt;
+    }
+    
+    advance();
 
     stmt *stmt = alloc_stmt(expr->span, exprstmt);
 
@@ -311,7 +329,7 @@ expr *parser::parse_primary() {
         expr *expr = parse_expression();
 
         if (peek().type != lexer::token_type::close_paren) {
-            core::span span = advance().span;
+            core::span span = peek().span;
             error("expected ')'", span);
             sync();
             
@@ -345,6 +363,8 @@ expr *parser::parse_primary() {
 
         error(ss.rdbuf(), span);
 
+        sync();
+
         expr *expr = alloc_expr(span);
 
         return expr;
@@ -360,6 +380,8 @@ void parser::sync() {
                 advance();
                 return;
             case token_type::open_brace:
+                return;
+            case token_type::close_brace:
                 return;
             default:
                 advance();

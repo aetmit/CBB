@@ -34,7 +34,7 @@ private:
     nodeid current_nodeid_; 
 
     // reference to arena in the program
-    std::unique_ptr<std::unique_ptr<core::arena>> arena_;
+    std::unique_ptr<core::arena> *arena_;
 
     std::vector<core::diagnostic> &diagnostics_;
 

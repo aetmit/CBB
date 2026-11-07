@@ -1,6 +1,7 @@
 #include "parser/ast.hpp"
 
 #include <utility>
+#include <type_traits>
 
 namespace cbb {
 
@@ -37,7 +38,7 @@ unary::unary(unaryop op, expr *operand): op(op), operand(operand) {}
 
 exprstmt::exprstmt(struct expr *expr): expr(expr) {}
 
-block::block(std::vector<stmt*> body): body(body) {}
+block::block(std::vector<stmt*> body): body(std::move(body)) {}
 
 std::ostream &operator<<(std::ostream &os, const nodeid &id) {
     return os << id.value;

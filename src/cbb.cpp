@@ -1,11 +1,12 @@
 #include "cbb.hpp"
 
 #include <string>
+#include <vector>
 
 #include "core/file.hpp"
 #include "core/error.hpp"
-
-#include "lexer/lexer.hpp"
+#include "core/diagnostics.hpp"
+#include "parser/parser.hpp"
 
 namespace cbb {
 
@@ -25,11 +26,11 @@ int run(int argc, const char *argv[]) {
         FATAL("failed to read file");
     }
 
-    lexer::lexer tokenstream(file);
-    
-    for (auto it = tokenstream.begin(); it != tokenstream.end(); ++it) {
-        std::cout << *it << "\n";
-    }
+    std::vector<core::diagnostic> diagnostics;
+
+    parser::parser parser(file, diagnostics);
+    auto ast = parser.parse();
+    std::cout << ast;
 
     return 0;
 }
