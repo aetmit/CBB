@@ -27,6 +27,8 @@ add_executable(cbb
 
     src/analysis/resolution.cpp
     src/analysis/ids.cpp
+    src/analysis/analysis.cpp
+    src/analysis/context.cpp
 )
 
 target_compile_options(cbb PRIVATE

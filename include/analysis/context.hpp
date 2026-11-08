@@ -13,7 +13,9 @@ namespace cbb {
 
 namespace sema {
 
-struct analysis_ctx {
+struct context {
+    context(std::vector<core::diagnostic> &diagnostics);
+
     std::vector<scope> scopes;
 
     std::vector<core::diagnostic> &diagnostics;

@@ -7,6 +7,7 @@
 #include "core/error.hpp"
 #include "core/diagnostics.hpp"
 #include "parser/parser.hpp"
+#include "analysis/analysis.hpp"
 
 namespace cbb {
 
@@ -37,8 +38,9 @@ int run(int argc, const char *argv[]) {
             std::cout << formatter.format(*it) << "\n";
         }
     }
-    parser::ast_formatter formatter;
-    std::cout << formatter.format(ast) << "\n";
+
+    sema::semantic_analyser analyser(diagnostics);
+    auto hir = analyser.analyse(ast);
 
     return 0;
 }

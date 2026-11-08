@@ -13,13 +13,13 @@ namespace ast = parser;
 
 resolver::resolver(): current_local_id_(0) {}
 
-void resolver::resolve(const ast::program &program, analysis_ctx &ctx) {
+void resolver::resolve(const ast::program &program, context &ctx) {
     for (auto it = program.body.begin(); it != program.body.end(); ++it)  {
         resolve_stmt(**it, ctx);
     }
 }
 
-localid resolver::declare_var(std::string_view name, core::span span, analysis_ctx &ctx) {
+localid resolver::declare_var(std::string_view name, core::span span, context &ctx) {
     if (ctx.scopes.back().variables.contains(name)) {
         error(std::format("redeclaration of identifier: '{}'", name), span, ctx);
 
@@ -33,7 +33,7 @@ localid resolver::declare_var(std::string_view name, core::span span, analysis_c
     return id;
 }
 
-std::optional<localid> resolver::lookup_var(std::string_view name, analysis_ctx &ctx) {
+std::optional<localid> resolver::lookup_var(std::string_view name, context &ctx) {
     for (auto it = ctx.scopes.rbegin(); it != ctx.scopes.rend(); ++it) {
         for (auto [var_name, id] : it->variables) {
             if (name == var_name) {
@@ -44,15 +44,15 @@ std::optional<localid> resolver::lookup_var(std::string_view name, analysis_ctx 
     return std::nullopt;
 }
 
-void resolver::enter_scope(analysis_ctx &ctx) {
+void resolver::enter_scope(context &ctx) {
     ctx.scopes.push_back(scope());
 }
 
-void resolver::exit_scope(analysis_ctx &ctx) {
+void resolver::exit_scope(context &ctx) {
     ctx.scopes.pop_back();
 }
 
-void resolver::resolve_stmt(const parser::stmt &stmt, analysis_ctx &ctx) {
+void resolver::resolve_stmt(const parser::stmt &stmt, context &ctx) {
     std::visit(core::overloaded {
         [&, this](const ast::var_decl &decl) {
             resolve_var_decl(decl, nodedata(stmt.id, stmt.span), ctx);
@@ -69,7 +69,7 @@ void resolver::resolve_stmt(const parser::stmt &stmt, analysis_ctx &ctx) {
     }, stmt.value);
 }
 
-void resolver::resolve_block(const parser::block &block, nodedata, analysis_ctx &ctx) {
+void resolver::resolve_block(const parser::block &block, nodedata, context &ctx) {
     enter_scope(ctx);
 
     for (auto it = block.body.begin(); it != block.body.end(); ++it) {
@@ -79,11 +79,11 @@ void resolver::resolve_block(const parser::block &block, nodedata, analysis_ctx 
     exit_scope(ctx);
 }
 
-void resolver::resolve_exprstmt(const parser::exprstmt &exprstmt, nodedata, analysis_ctx &ctx) {
+void resolver::resolve_exprstmt(const parser::exprstmt &exprstmt, nodedata, context &ctx) {
     resolve_expr(*exprstmt.expr, ctx);
 }
 
-void resolver::resolve_var_decl(const parser::var_decl &var_decl, nodedata data, analysis_ctx &ctx) {
+void resolver::resolve_var_decl(const parser::var_decl &var_decl, nodedata data, context &ctx) {
     if (var_decl.initialiser != nullptr) {
         resolve_expr(*var_decl.initialiser, ctx);
     }
@@ -93,7 +93,7 @@ void resolver::resolve_var_decl(const parser::var_decl &var_decl, nodedata data,
     ctx.variables.emplace(data.id, id);
 }
 
-void resolver::resolve_expr(const ast::expr &expr, analysis_ctx &ctx) {
+void resolver::resolve_expr(const ast::expr &expr, context &ctx) {
     std::visit(core::overloaded {
         [&, this](const ast::var_assign &var_assign) {
             resolve_var_assign(var_assign, nodedata(expr.id, expr.span), ctx);
@@ -116,21 +116,21 @@ void resolver::resolve_expr(const ast::expr &expr, analysis_ctx &ctx) {
     }, expr.value);
 }
 
-void resolver::resolve_literal(const ast::literal &, nodedata, analysis_ctx &) {
+void resolver::resolve_literal(const ast::literal &, nodedata, context &) {
     // no nothing because literals do not need any name resolution
     return;
 }
 
-void resolver::resolve_unary(const ast::unary &unary, nodedata, analysis_ctx &ctx) {
+void resolver::resolve_unary(const ast::unary &unary, nodedata, context &ctx) {
     resolve_expr(*unary.operand, ctx);
 }
 
-void resolver::resolve_binary(const ast::binary &binary, nodedata, analysis_ctx &ctx) {
+void resolver::resolve_binary(const ast::binary &binary, nodedata, context &ctx) {
     resolve_expr(*binary.left, ctx);
     resolve_expr(*binary.right, ctx);
 }
 
-void resolver::resolve_variable(const ast::variable &variable, nodedata data, analysis_ctx &ctx) {
+void resolver::resolve_variable(const ast::variable &variable, nodedata data, context &ctx) {
     std::optional<localid> id = lookup_var(variable.name, ctx);
 
     if (!id) {
@@ -140,7 +140,7 @@ void resolver::resolve_variable(const ast::variable &variable, nodedata data, an
     ctx.variables.emplace(data.id, *id);
 }
 
-void resolver::resolve_var_assign(const ast::var_assign &var_assign, nodedata, analysis_ctx &ctx) {
+void resolver::resolve_var_assign(const ast::var_assign &var_assign, nodedata, context &ctx) {
     resolve_expr(*var_assign.target, ctx);
     resolve_expr(*var_assign.value, ctx);
 }
