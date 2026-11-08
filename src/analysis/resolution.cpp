@@ -13,6 +13,12 @@ namespace ast = parser;
 
 resolver::resolver(): current_local_id_(0) {}
 
+void resolver::resolve(const ast::program &program, analysis_ctx &ctx) {
+    for (auto it = program.body.begin(); it != program.body.end(); ++it)  {
+        resolve_stmt(**it, ctx);
+    }
+}
+
 localid resolver::declare_var(std::string_view name, core::span span, analysis_ctx &ctx) {
     if (ctx.scopes.back().variables.contains(name)) {
         error(std::format("redeclaration of identifier: '{}'", name), span, ctx);

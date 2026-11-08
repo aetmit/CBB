@@ -18,6 +18,8 @@ namespace sema {
 class resolver {
 public:
     resolver();
+
+    void resolve(const parser::program &program, analysis_ctx &ctx);
 private:
     localid current_local_id_;
 
