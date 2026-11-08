@@ -24,6 +24,9 @@ add_executable(cbb
 
     src/parser/ast.cpp
     src/parser/parser.cpp
+
+    src/analysis/resolution.cpp
+    src/analysis/ids.cpp
 )
 
 target_compile_options(cbb PRIVATE

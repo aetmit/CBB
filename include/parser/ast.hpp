@@ -7,6 +7,7 @@
 #include <memory>
 #include <variant>
 #include <ostream>
+#include <functional>
 
 #include <cstddef>
 #include <cstdint>
@@ -22,7 +23,24 @@ struct nodeid {
     std::size_t value;
 
     explicit constexpr nodeid(std::size_t value): value(value) {}
+
+    bool operator==(const nodeid&) const = default;
 };
+
+} // namespace parser
+
+} // namespace cbb
+
+template<>
+struct std::hash<cbb::parser::nodeid> {
+    std::size_t operator()(const cbb::parser::nodeid &id) const noexcept {
+        return std::hash<std::size_t>{}(id.value);
+    }
+};
+
+namespace cbb {
+
+namespace parser {
 
 struct expr;
 struct stmt;
