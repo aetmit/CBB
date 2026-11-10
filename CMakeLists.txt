@@ -29,6 +29,8 @@ add_executable(cbb
     src/analysis/ids.cpp
     src/analysis/analysis.cpp
     src/analysis/context.cpp
+    src/analysis/type_checker.cpp
+    src/analysis/type.cpp
 )
 
 target_compile_options(cbb PRIVATE

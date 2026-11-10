@@ -2,6 +2,7 @@
 #define CBB_ANALYSIS_IDS_HPP
 
 #include <limits>
+#include <functional>
 
 #include <cstddef>
 
@@ -20,12 +21,21 @@ struct localid {
 
     localid &operator++();
 
+    bool operator==(const localid&) const = default;
+
 };
 
 } // namespace sema
 
     
 } // namespace cbb
+
+template<>
+struct std::hash<cbb::sema::localid> {
+    std::size_t operator()(const cbb::sema::localid &id) const noexcept {
+        return std::hash<std::size_t>{}(id.value);
+    }
+};
 
 
 #endif // CBB_ANALYSIS_IDS_HPP
