@@ -16,7 +16,7 @@ namespace core {
 
 #define LOCATION __FILE__ ":" TOSTRING(__LINE__)
 
-template<class ...Args>
+template <class ...Args>
 [[noreturn]] void fatal_error(std::string_view location, std::format_string<Args...> fmt, Args&&... args) {
     std::cerr << "fatal error: ";
     std::cerr << location << ": ";

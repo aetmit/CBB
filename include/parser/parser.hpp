@@ -45,7 +45,7 @@ private:
 
     void sync();
 
-    template<class T>
+    template <class T>
     expr *alloc_expr(core::span span, T value) {
         void *memory = (*arena_)->allocate(sizeof(expr), alignof(expr));
 
@@ -56,7 +56,7 @@ private:
 
     expr *alloc_expr(core::span span);
 
-    template<class T>
+    template <class T>
     stmt *alloc_stmt(core::span span, T value) {
         void *memory = (*arena_)->allocate(sizeof(stmt), alignof(stmt));
 
@@ -65,7 +65,7 @@ private:
         return stmt;
     }
 
-    template<class T>
+    template <class T>
     requires core::writable_to_stream<T>
     void error(T msg, core::span span) {
         std::stringstream ss;

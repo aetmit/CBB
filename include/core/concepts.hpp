@@ -8,7 +8,7 @@ namespace cbb {
 
 namespace core {
 
-template<class T>
+template <class T>
 concept writable_to_stream = requires(std::ostream &os, const T &val) {
     os << val;
 };

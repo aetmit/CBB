@@ -25,7 +25,7 @@ public:
 
 private:
 
-    template<class T>
+    template <class T>
     requires core::writable_to_stream<T>
     void error(T message, core::span span, context ctx) {
         std::stringstream ss;

@@ -42,7 +42,7 @@ private:
 
 std::ostream &operator<<(std::ostream &os, const span &span);
 
-template<class T>
+template <class T>
 struct spanned {
 public:
     T node;
@@ -52,7 +52,7 @@ public:
     spanned() = default;
 };
 
-template<class T>
+template <class T>
 requires core::writable_to_stream<T>
 std::ostream &operator<<(std::ostream &os, const spanned<T> &obj) {
     os << "spanned<T> {\nnode: " << obj.node << "\nspan: " << obj.span << "\n}\n";

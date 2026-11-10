@@ -31,7 +31,7 @@ struct nodeid {
 
 } // namespace cbb
 
-template<>
+template <>
 struct std::hash<cbb::parser::nodeid> {
     std::size_t operator()(const cbb::parser::nodeid &id) const noexcept {
         return std::hash<std::size_t>{}(id.value);

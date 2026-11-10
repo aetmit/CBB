@@ -38,7 +38,7 @@ struct hirid {
     
 } // namespace cbb
 
-template<>
+template <>
 struct std::hash<cbb::sema::localid> {
     std::size_t operator()(const cbb::sema::localid &id) const noexcept {
         return std::hash<std::size_t>{}(id.value);
