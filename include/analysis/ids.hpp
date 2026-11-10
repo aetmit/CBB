@@ -25,6 +25,14 @@ struct localid {
 
 };
 
+struct hirid {
+    std::size_t value;
+
+    explicit constexpr hirid(std::size_t value): value(value) {}
+
+    bool operator==(const hirid&) const = default;
+};
+
 } // namespace sema
 
     

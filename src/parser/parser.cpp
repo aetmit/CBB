@@ -227,7 +227,7 @@ expr *parser::parse_assignment() {
 
         core::span span = left->span.join(right->span);
 
-        var_assign var_assign = { .target = left, .value = right };
+        var_assign var_assign(left, right);
 
         expr *expr = alloc_expr(span, var_assign);
 

@@ -37,6 +37,8 @@ int run(int argc, const char *argv[]) {
         for (auto it = diagnostics.begin(); it != diagnostics.end(); ++it) {
             std::cout << formatter.format(*it) << "\n";
         }
+
+        return 1;
     }
 
     sema::semantic_analyser analyser(diagnostics);

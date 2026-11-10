@@ -329,6 +329,8 @@ void ast_formatter::format_statement(std::ostream &os, const stmt *statement, st
     }, statement->value);
 }
 
+var_assign::var_assign(expr *target, expr *value): target(target), value(value) {}
+
 } // namespace parser
 
 } // namespace cbb

@@ -59,6 +59,8 @@ struct variable {
 struct var_assign {
     expr *target;
     expr *value;
+
+    var_assign(expr *target, expr *value);
 };
 
 enum class binaryop_type {
@@ -94,7 +96,7 @@ struct expr {
     nodeid id;
     core::span span;
 
-    std::variant<literal, binary, unary, variable, var_assign, std::monostate> value;
+    std::variant<std::monostate, literal, binary, unary, variable, var_assign> value;
 
     expr(nodeid id, core::span span, literal literal);
     expr(nodeid id, core::span span, binary binary);

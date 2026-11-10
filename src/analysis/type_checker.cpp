@@ -163,7 +163,7 @@ type_info type_checker::check_literal(const ast::literal &literal, nodedata data
 }
 
 type_info type_checker::check_int_literal(std::uint64_t integer, nodedata, context&) {
-    if (integer <= std::numeric_limits<std::uint64_t>::max()) {
+    if (integer <= std::numeric_limits<std::uint32_t>::max()) {
         return type_info(type::int_, value_cat::rvalue); 
     } else {
         // larger integer types not yet implemented
