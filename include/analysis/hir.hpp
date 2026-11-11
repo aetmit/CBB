@@ -6,6 +6,7 @@
 #include <variant>
 
 #include "analysis/ids.hpp"
+#include "analysis/type.hpp"
 #include "core/arena.hpp"
 
 namespace cbb {
@@ -65,6 +66,11 @@ struct expr {
     type_info type;
 
     std::variant<unary, binary, var_assign, variable> value;   
+
+    expr(hirid id, type_info type, unary unary);
+    expr(hirid id, type_info type, binary binary);
+    expr(hirid id, type_info type, var_assign var_assign);
+    expr(hirid id, type_info type, variable varialbe);
 };
 
 struct exprstmt {
@@ -83,6 +89,8 @@ struct var_decl {
     localid id;   
     type_info type;
     expr *initaliser;
+
+    var_decl(localid id, type_info type, expr *initaliser);
 };
 
 struct stmt {
@@ -99,6 +107,8 @@ struct stmt {
 struct program {
     std::unique_ptr<core::arena> arena;
     std::vector<stmt*> body;
+
+    program(std::unique_ptr<core::arena> arena, std::vector<stmt*> body);
 };
     
 } // namespace sema

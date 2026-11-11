@@ -31,6 +31,7 @@ add_executable(cbb
     src/analysis/context.cpp
     src/analysis/type_checker.cpp
     src/analysis/type.cpp
+    src/analysis/hir.cpp
 )
 
 target_compile_options(cbb PRIVATE
