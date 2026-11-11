@@ -19,7 +19,7 @@ namespace sema {
 
 class type_checker {
 public:
-    type_checker();
+    type_checker() = default;
 
     void check(const parser::program &program, context &ctx);
 
