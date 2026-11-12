@@ -55,8 +55,8 @@ struct variable {
     std::string_view name;   
 };
 
-// target is verified to be an l-value in the analysis modules
 struct var_assign {
+    // target is verified to be an l-value in the analysis modules
     expr *target;
     expr *value;
 
@@ -153,10 +153,20 @@ struct stmt {
 };
 
 struct program {
+    // pointer here because the arena itself is non moveable and non copyable which
+    // makes doing some stuff not very intuative
+    // with unique_ptr we can then sorta move the arena but the allocation stays the same
+    // its just the pointer that gets moved
     std::unique_ptr<core::arena> arena;
     std::vector<stmt*> body;
 };
 
+// these overloads reconstruct the ast back into source code 
+// we are able to do this because the ast contans enough information
+// to do so
+// doesnt print the internal fields of each node
+// for that you should use ast_formatter::format() and then print the 
+// string that it returns
 std::ostream &operator<<(std::ostream &os, const program &program);
 std::ostream &operator<<(std::ostream &os, const stmt &stmt);
 std::ostream &operator<<(std::ostream &os, const expr &expr);

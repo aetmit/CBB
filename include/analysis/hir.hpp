@@ -106,10 +106,31 @@ struct stmt {
 };
 
 struct program {
+    // pointer here because the arena itself is non moveable and non copyable which
+    // makes doing some stuff not very intuative
+    // with unique_ptr we can then sorta move the arena but the allocation stays the same
+    // its just the pointer that gets moved
     std::unique_ptr<core::arena> arena;
     std::vector<stmt*> body;
 
     program(std::unique_ptr<core::arena> arena, std::vector<stmt*> body);
+};
+
+class hir_formatter {
+public:
+    hir_formatter() = default;  
+
+    std::string format(const program &program);
+private:
+    void indent(std::ostream &out, std::size_t depth);
+
+    void format_expr(std::ostream &out, const expr *node, std::size_t depth);
+    void format_stmt(std::ostream &out, const stmt *node, std::size_t depth);
+
+    const char *type_name(type t);
+    const char *value_cat_name(value_cat cat);
+    const char *binary_name(binarytype op);
+    const char *unary_name(unarytype op);
 };
     
 } // namespace sema

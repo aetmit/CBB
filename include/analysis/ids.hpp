@@ -3,6 +3,7 @@
 
 #include <limits>
 #include <functional>
+#include <ostream>
 
 #include <cstddef>
 
@@ -25,6 +26,8 @@ struct localid {
 
 };
 
+std::ostream &operator<<(std::ostream &os, const localid &id);
+
 struct hirid {
     std::size_t value;
 
@@ -33,9 +36,10 @@ struct hirid {
     bool operator==(const hirid&) const = default;
 };
 
+std::ostream &operator<<(std::ostream &os, const hirid &hirid);
+
 } // namespace sema
 
-    
 } // namespace cbb
 
 template <>
