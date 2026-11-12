@@ -19,13 +19,13 @@ void type_checker::check(const ast::program &program, context &ctx) {
 
 void type_checker::check_stmt(const ast::stmt &stmt, context &ctx) {
     std::visit(core::overloaded {
-        [&, this](const ast::block &block) {
+        [&](const ast::block &block) {
             check_block(block, nodedata(stmt.id, stmt.span), ctx);
         },
-        [&, this](const ast::exprstmt &exprstmt) {
+        [&](const ast::exprstmt &exprstmt) {
             check_exprstmt(exprstmt, nodedata(stmt.id, stmt.span), ctx);
         },
-        [&, this](const ast::var_decl &decl) {
+        [&](const ast::var_decl &decl) {
             check_vardecl(decl, nodedata(stmt.id, stmt.span), ctx);
         },
         [](std::monostate) {
@@ -79,19 +79,19 @@ void type_checker::check_exprstmt(const ast::exprstmt &exprstmt, nodedata, conte
 
 type_info type_checker::check_expr(const ast::expr &expr, context &ctx) {
     type_info res = std::visit(core::overloaded {
-        [&, this](const ast::binary &binary) -> type_info {
+        [&](const ast::binary &binary) -> type_info {
             return check_binary(binary, nodedata(expr.id, expr.span), ctx);
         },
-        [&, this](const ast::literal &literal) -> type_info {
+        [&](const ast::literal &literal) -> type_info {
             return check_literal(literal, nodedata(expr.id, expr.span), ctx);
         },
-        [&, this](const ast::unary &unary) -> type_info {
+        [&](const ast::unary &unary) -> type_info {
             return check_unary(unary, nodedata(expr.id, expr.span), ctx);
         },
-        [&, this](const ast::variable &variable) -> type_info {
+        [&](const ast::variable &variable) -> type_info {
             return check_variable(variable, nodedata(expr.id, expr.span), ctx);
         },
-        [&, this](const ast::var_assign &var_assign) -> type_info {
+        [&](const ast::var_assign &var_assign) -> type_info {
             return check_var_assign(var_assign, nodedata(expr.id, expr.span), ctx);
         },
         [](std::monostate) -> type_info {

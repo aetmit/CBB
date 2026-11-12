@@ -35,7 +35,7 @@ std::optional<program> semantic_analyser::analyse(const parser::program &program
     }
 
     lowerer lowerer;
-    sema::program hir = lowerer.lower(program);
+    sema::program hir = lowerer.lower(program, context);
 
     return hir;
 }

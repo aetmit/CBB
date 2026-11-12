@@ -54,13 +54,13 @@ void resolver::exit_scope(context &ctx) {
 
 void resolver::resolve_stmt(const parser::stmt &stmt, context &ctx) {
     std::visit(core::overloaded {
-        [&, this](const ast::var_decl &decl) {
+        [&](const ast::var_decl &decl) {
             resolve_var_decl(decl, nodedata(stmt.id, stmt.span), ctx);
         },
-        [&, this](const ast::block &block) {
+        [&](const ast::block &block) {
             resolve_block(block, nodedata(stmt.id, stmt.span), ctx);
         },
-        [&, this](const ast::exprstmt &exprstmt) {
+        [&](const ast::exprstmt &exprstmt) {
             resolve_exprstmt(exprstmt, nodedata(stmt.id, stmt.span), ctx);
         },
         [](std::monostate) {
@@ -95,19 +95,19 @@ void resolver::resolve_var_decl(const parser::var_decl &var_decl, nodedata data,
 
 void resolver::resolve_expr(const ast::expr &expr, context &ctx) {
     std::visit(core::overloaded {
-        [&, this](const ast::var_assign &var_assign) {
+        [&](const ast::var_assign &var_assign) {
             resolve_var_assign(var_assign, nodedata(expr.id, expr.span), ctx);
         },
-        [&, this](const ast::variable &variable) {
+        [&](const ast::variable &variable) {
             resolve_variable(variable, nodedata(expr.id, expr.span), ctx);
         },
-        [&, this](const ast::binary &binary) {
+        [&](const ast::binary &binary) {
             resolve_binary(binary, nodedata(expr.id, expr.span), ctx);
         },
-        [&, this](const ast::unary &unary) {
+        [&](const ast::unary &unary) {
             resolve_unary(unary, nodedata(expr.id, expr.span), ctx);
         },
-        [&, this](const ast::literal &literal) {
+        [&](const ast::literal &literal) {
             resolve_literal(literal, nodedata(expr.id, expr.span), ctx);
         },
         [](std::monostate) {
