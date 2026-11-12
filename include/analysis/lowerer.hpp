@@ -30,11 +30,11 @@ private:
     stmt *lower_var_decl(const parser::var_decl &var_decl, parser::nodeid nodeid, context &ctx);
 
     expr *lower_expr(const parser::expr &expr, context &ctx);
-    expr *lower_literal(const parser::literal &literal, context &ctx);
-    expr *lower_binary(const parser::binary &binary, context &ctx);
-    expr *lower_unary(const parser::unary &unary, context &ctx);
+    expr *lower_literal(const parser::literal &literal, parser::nodeid id, context &ctx);
+    expr *lower_binary(const parser::binary &binary, parser::nodeid id, context &ctx);
+    expr *lower_unary(const parser::unary &unary, parser::nodeid id, context &ctx);
     expr *lower_variable(const parser::variable &variable, parser::nodeid id, context &ctx);
-    expr *lower_var_assign(const parser::var_assign &var_assign, context &ctx);
+    expr *lower_var_assign(const parser::var_assign &var_assign, parser::nodeid id, context &ctx);
 
     binarytype lower_binaryop(parser::binaryop_type op);
     unarytype lower_unaryop(parser::unaryop_type op);
@@ -51,10 +51,10 @@ private:
     }
 
     template <class T>
-    expr *alloc_expr(T value) {
+    expr *alloc_expr(type_info type_info, T value) {
         void *memory = (*arena_)->allocate(sizeof(expr), alignof(expr));
 
-        expr *expr = new(memory) struct expr(next_hirid(), value);
+        expr *expr = new(memory) struct expr(next_hirid(), type_info, value);
 
         return expr;
     }

@@ -101,19 +101,19 @@ stmt *lowerer::lower_block(const ast::block &block, context &ctx) {
 expr *lowerer::lower_expr(const ast::expr &expr, context &ctx) {
     sema::expr *hir_expr = std::visit(core::overloaded {
         [&](const ast::literal &literal) -> sema::expr* {
-            return lower_literal(literal, ctx);
+            return lower_literal(literal, expr.id, ctx);
         },
         [&](const ast::binary &binary) -> sema::expr* {
-            return lower_binary(binary, ctx);
+            return lower_binary(binary, expr.id, ctx);
         },
         [&](const ast::unary &unary) -> sema::expr* {
-            return lower_unary(unary, ctx);
+            return lower_unary(unary, expr.id, ctx);
         },
         [&](const ast::variable &variable) -> sema::expr* {
             return lower_variable(variable, expr.id, ctx);
         },
         [&](const ast::var_assign &var_assign) -> sema::expr* {
-            return lower_var_assign(var_assign, ctx);
+            return lower_var_assign(var_assign, expr.id, ctx);
         },
         [](std::monostate) -> sema::expr* {
             UNREACHABLE();
@@ -123,13 +123,15 @@ expr *lowerer::lower_expr(const ast::expr &expr, context &ctx) {
     return hir_expr;
 }
 
-expr *lowerer::lower_var_assign(const ast::var_assign &var_assign, context &ctx) {
+expr *lowerer::lower_var_assign(const ast::var_assign &var_assign, ast::nodeid id, context &ctx) {
     sema::expr *hir_value = lower_expr(*var_assign.value, ctx);
     sema::expr *hir_target = lower_expr(*var_assign.target, ctx);
 
     sema::var_assign hir_var_assign(hir_target, hir_value);
 
-    sema::expr *hir_expr = alloc_expr(hir_var_assign);
+    type_info type = ctx.types.at(id);
+
+    sema::expr *hir_expr = alloc_expr(type, hir_var_assign);
 
     return hir_expr;
 }
@@ -139,19 +141,23 @@ expr *lowerer::lower_variable(const ast::variable&, ast::nodeid id, context &ctx
 
     sema::variable hir_variable(var_id);
 
-    sema::expr *hir_expr = alloc_expr(hir_variable);
+    type_info type = ctx.types.at(id);
+
+    sema::expr *hir_expr = alloc_expr(type, hir_variable);
 
     return hir_expr;
 }
 
-expr *lowerer::lower_unary(const ast::unary &unary, context &ctx) {
+expr *lowerer::lower_unary(const ast::unary &unary, ast::nodeid id, context &ctx) {
     sema::unarytype op = lower_unaryop(unary.op.node);
 
     sema::expr *hir_operand = lower_expr(*unary.operand, ctx);
 
     sema::unary hir_unary(op, hir_operand);
 
-    sema::expr *hir_expr = alloc_expr(hir_unary);
+    type_info type = ctx.types.at(id);
+
+    sema::expr *hir_expr = alloc_expr(type, hir_unary);
 
     return hir_expr;
 }
@@ -163,7 +169,7 @@ unarytype lowerer::lower_unaryop(ast::unaryop_type op) {
     }
 }
 
-expr *lowerer::lower_binary(const ast::binary &binary, context &ctx) {
+expr *lowerer::lower_binary(const ast::binary &binary, ast::nodeid id, context &ctx) {
     binarytype op = lower_binaryop(binary.op.node);
 
     sema::expr *hir_left = lower_expr(*binary.left, ctx);
@@ -171,7 +177,9 @@ expr *lowerer::lower_binary(const ast::binary &binary, context &ctx) {
     
     sema::binary hir_binary(op, hir_left, hir_right);
 
-    sema::expr *hir_expr = alloc_expr(hir_binary);
+    type_info type = ctx.types.at(id);
+
+    sema::expr *hir_expr = alloc_expr(type, hir_binary);
 
     return hir_expr;
 }
@@ -189,8 +197,10 @@ binarytype lowerer::lower_binaryop(ast::binaryop_type op) {
     }
 }
 
-expr *lowerer::lower_literal(const ast::literal &literal, context &ctx) {
+expr *lowerer::lower_literal(const ast::literal &literal, ast::nodeid id, context &ctx) {
     std::optional<struct literal> hir_literal;
+
+    type_info type = ctx.types.at(id);
 
     std::visit(core::overloaded {
         [&hir_literal](std::int32_t integer) {
@@ -198,7 +208,7 @@ expr *lowerer::lower_literal(const ast::literal &literal, context &ctx) {
         },
     }, literal.value);
 
-    sema::expr *hir_expr = alloc_expr(*hir_literal);
+    sema::expr *hir_expr = alloc_expr(type, *hir_literal);
 
     return hir_expr;
 }
