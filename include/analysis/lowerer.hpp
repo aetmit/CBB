@@ -54,7 +54,7 @@ private:
     expr *alloc_expr(type_info type_info, T value) {
         void *memory = (*arena_)->allocate(sizeof(expr), alignof(expr));
 
-        expr *expr = new(memory) struct expr(next_hirid(), type_info, value);
+        expr *expr = new (memory) struct expr(next_hirid(), type_info, value);
 
         return expr;
     }
