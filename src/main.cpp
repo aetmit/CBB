@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "cbb.hpp"
 
 int main(int argc, const char *argv[]) {
