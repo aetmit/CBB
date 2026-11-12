@@ -14,9 +14,12 @@ namespace ast = parser;
 resolver::resolver(): current_local_id_(0) {}
 
 void resolver::resolve(const ast::program &program, context &ctx) {
+    enter_scope(ctx);
     for (auto it = program.body.begin(); it != program.body.end(); ++it)  {
         resolve_stmt(**it, ctx);
     }
+
+    exit_scope(ctx);
 }
 
 localid resolver::declare_var(std::string_view name, core::span span, context &ctx) {
@@ -141,8 +144,8 @@ void resolver::resolve_variable(const ast::variable &variable, nodedata data, co
 }
 
 void resolver::resolve_var_assign(const ast::var_assign &var_assign, nodedata, context &ctx) {
-    resolve_expr(*var_assign.target, ctx);
     resolve_expr(*var_assign.value, ctx);
+    resolve_expr(*var_assign.target, ctx);
 }
 
 resolver::nodedata::nodedata(ast::nodeid id, core::span span): span(span), id(id) {}

@@ -118,7 +118,7 @@ type_info type_checker::check_var_assign(const ast::var_assign &var_assign, node
         return type_info::error;
     }
 
-    return value_type;
+    return type_info(target_type.type, value_cat::rvalue);
 }
 
 type_info type_checker::check_variable(const ast::variable&, nodedata data, context &ctx) {
@@ -176,7 +176,7 @@ std::optional<type> type_checker::check_unary_type(ast::unaryop_type, type a) co
         return type::error;
     }
 
-    if (static_cast<int>(type::error) != 2) {
+    if (static_cast<int>(type::error) != 1) {
         FATAL("someone added new types so actually implement this");
     }
 
@@ -188,7 +188,7 @@ std::optional<type> type_checker::check_binary_type(ast::binaryop_type, type lhs
         return type::error;
     }
 
-    if (static_cast<int>(type::error) != 2) {
+    if (static_cast<int>(type::error) != 1) {
         FATAL("just check here and actually implement type checking here when there are actually some more types");
     }
     return type::int_;
