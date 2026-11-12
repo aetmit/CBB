@@ -65,12 +65,13 @@ struct expr {
     hirid id;
     type_info type;
 
-    std::variant<unary, binary, var_assign, variable> value;   
+    std::variant<unary, binary, var_assign, variable, literal> value;   
 
     expr(hirid id, type_info type, unary unary);
     expr(hirid id, type_info type, binary binary);
     expr(hirid id, type_info type, var_assign var_assign);
     expr(hirid id, type_info type, variable varialbe);
+    expr(hirid id, type_info type, literal literal);
 };
 
 struct exprstmt {

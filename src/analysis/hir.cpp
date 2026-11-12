@@ -28,6 +28,8 @@ expr::expr(hirid id, type_info type, var_assign var_assign): id(id), type(type),
 
 expr::expr(hirid id, type_info type, variable variable): id(id), type(type), value(std::in_place_type<struct variable>, std::move(variable)) {}
 
+expr::expr(hirid id, type_info type, literal literal): id(id), type(type), value(std::in_place_type<struct literal>, std::move(literal)) {}
+
 unary::unary(unarytype op, expr *operand): op(op), operand(operand) {}
 
 binary::binary(binarytype op, expr *left, expr *right): op(op), left(left), right(right) {}
