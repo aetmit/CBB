@@ -29,6 +29,18 @@ enum class token_type {
 
     equal,
 
+    equal_equal,
+    bang_equal,
+
+    greater_eq,
+    greater,
+    less_eq,
+    less,
+
+    logical_and,
+    logical_or,
+    bang,
+
     // _ postfix because we avoid conflict with the c++ keywords
     true_,
     false_,

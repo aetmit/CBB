@@ -93,6 +93,42 @@ std::ostream& operator<<(std::ostream& os, const token_type& type) {
             os << "false";
             break;
 
+        case token_type::bang:
+            os << "bang";
+            break;
+
+        case token_type::logical_and:
+            os << "logical and";
+            break;
+        
+        case token_type::logical_or:
+            os << "logical or";
+            break;
+
+        case token_type::less:
+            os << "less";
+            break;
+
+        case token_type::less_eq:
+            os << "less equal";
+            break;
+
+        case token_type::greater:
+            os << "greater";
+            break;
+        
+        case token_type::greater_eq:
+            os << "greter equal";
+            break;
+
+        case token_type::bang_equal:
+            os << "bang equal";
+            break;
+
+        case token_type::equal_equal:
+            os << "equal equal";
+            break;
+
         default:
             os << "unknown";
             break;

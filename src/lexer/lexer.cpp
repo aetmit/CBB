@@ -14,10 +14,6 @@ namespace lexer {
 lexer::lexer(std::string_view source): source_(source), current_(0), start_(0), line_(0), column_(0), start_column_(0) {}
 
 token lexer::next() {
-    if (is_at_end()) {
-        return token(token_type::eof, core::span(current_, 0), column_, line_);
-    }
-
     skip_whitespace();
 
     if (is_at_end()) {
@@ -55,7 +51,42 @@ token lexer::next() {
             return create_token(token_type::close_brace);
         case '=':
             advance();
+            if (matches('=')) {
+                return create_token(token_type::equal_equal);
+            }
             return create_token(token_type::equal);
+        case '!':
+            advance();
+            if (matches('=')) {
+                return create_token(token_type::bang_equal);
+            }
+            return create_token(token_type::bang);
+        case '>':
+            advance();
+            if (matches('=')) {
+                return create_token(token_type::greater_eq);
+            }
+            return create_token(token_type::greater);
+        case '<':
+            advance();
+            if (matches('=')) {
+                return create_token(token_type::less_eq);
+            }
+            return create_token(token_type::less);
+        case '&':
+            advance();
+            if (matches('&')) {
+                return create_token(token_type::logical_and);
+            }
+            FATAL("we dont have any way to handle this rn because btiwise and doesn't exist yet");
+            break;
+        case '|':
+            advance();
+            if (matches('|')) {
+                return create_token(token_type::logical_or);
+            }
+            FATAL("we dont have any way to handle this rn because btiwise and doesn't exist yet");
+            break;
         case ';':
             advance();
             return create_token(token_type::semicolon);
@@ -105,6 +136,15 @@ char lexer::peek() const {
         return eof_char_;
     }
     return source_[current_];
+}
+
+bool lexer::matches(char expected) {
+    if (is_at_end() || peek() != expected) {
+        return false;
+    }
+
+    advance();
+    return true;
 }
 
 char lexer::advance() {

@@ -64,6 +64,7 @@ private:
     bool is_at_end() const;
     void skip_whitespace();
     char peek() const;
+    bool matches(char expected);
     char advance();
     token create_token(token_type type) const;
     token_type get_identifier_type(std::string_view lexeme) const;
