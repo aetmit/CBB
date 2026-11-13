@@ -81,6 +81,18 @@ std::ostream& operator<<(std::ostream& os, const token_type& type) {
             os << "eof";
             break;
 
+        case token_type::bool_:
+            os << "bool";
+            break;
+
+        case token_type::true_:
+            os << "true";
+            break;
+
+        case token_type::false_:
+            os << "false";
+            break;
+
         default:
             os << "unknown";
             break;

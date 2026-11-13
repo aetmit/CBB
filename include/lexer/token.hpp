@@ -29,9 +29,15 @@ enum class token_type {
 
     equal,
 
+    // _ postfix because we avoid conflict with the c++ keywords
+    true_,
+    false_,
+
     // keyword int not to be confused with integer literal
     // _ postfix because int is not allowed cuz its the type
     int_,
+    // _ postfix because bool is not alloewd cuz its a type
+    bool_,
 
     semicolon,
 
