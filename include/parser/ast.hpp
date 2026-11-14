@@ -46,9 +46,10 @@ struct expr;
 struct stmt;
 
 struct literal {
-    std::variant<std::uint64_t> value;
+    std::variant<std::uint64_t, bool> value;
 
     explicit literal(std::uint64_t value);
+    explicit literal(bool value);
 };
 
 struct variable {
@@ -68,10 +69,22 @@ enum class binaryop_type {
     sub,
     mul,
     div,
+
+    logical_and,
+    logical_or,
+    
+    equal,
+    not_equal,
+
+    greater,
+    greater_eq,
+    less,
+    less_eq,
 };
 
 enum class unaryop_type {
     negate,
+    logical_not,
 };
 
 using binop = core::spanned<binaryop_type>;
@@ -117,6 +130,8 @@ enum class type_syntax_type {
     
     // no additional data is needed if the type is int
     int_,
+    //same for bool
+    bool_,
 };
 
 struct type_syntax {

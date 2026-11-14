@@ -33,7 +33,9 @@ var_decl::var_decl(std::string_view name, type_syntax type_annotation, expr *ini
 
 binary::binary(binop op, expr *left, expr *right): op(op), left(left), right(right) {}
 
-literal::literal(std::uint64_t value): value(std::in_place_type<std::uint64_t>, value) {}
+literal::literal(std::uint64_t value): value(value) {}
+
+literal::literal(bool value): value(value) {}
 
 unary::unary(unaryop op, expr *operand): op(op), operand(operand) {}
 
@@ -51,6 +53,14 @@ std::ostream &operator<<(std::ostream &os, const binaryop_type &op) {
         case binaryop_type::sub: return os << "-";
         case binaryop_type::mul: return os << "*";
         case binaryop_type::div: return os << "/";
+        case binaryop_type::logical_and: return os << "&&";
+        case binaryop_type::logical_or: return os << "||";
+        case binaryop_type::equal: return os << "==";
+        case binaryop_type::not_equal: return os << "!=";
+        case binaryop_type::greater: return os << ">";
+        case binaryop_type::greater_eq: return os << ">=";
+        case binaryop_type::less: return os << "<";
+        case binaryop_type::less_eq: return os << "<=";
     }
 
     return os << "<invalid binary operator>";
@@ -59,6 +69,7 @@ std::ostream &operator<<(std::ostream &os, const binaryop_type &op) {
 std::ostream &operator<<(std::ostream &os, const unaryop_type &op) {
     switch (op) {
         case unaryop_type::negate: return os << "-";
+        case unaryop_type::logical_not: return os << "!";
     }
 
     return os << "<invalid unary operator>";
@@ -96,6 +107,8 @@ std::ostream &operator<<(std::ostream &os, const type_syntax &type) {
     switch (type.type) {
         case type_syntax_type::int_:
             return os << "int";
+        case type_syntax_type::bool_:
+            return os << "bool";
     }
 
     return os << "<invalid type>";
@@ -186,6 +199,9 @@ void ast_formatter::format_type_syntax(std::ostream &os, const type_syntax &type
     switch (type.type) {
         case type_syntax_type::int_:
             os << "int\n";
+            return;
+        case type_syntax_type::bool_:
+            os << "bool\n";
             return;
     }
     os << "<invalid type>\n";
