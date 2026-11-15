@@ -4,6 +4,7 @@
 #include <utility>
 
 #include "core/error.hpp"
+#include "core/utility.hpp"
 
 namespace cbb {
 
@@ -42,6 +43,9 @@ stmt *parser::parse_statement() {
         case lexer::token_type::open_paren:
         case lexer::token_type::identifier:
         case lexer::token_type::minus:
+        case lexer::token_type::true_:
+        case lexer::token_type::false_:
+        case lexer::token_type::bang:
             return parse_stmtexpr();
         case lexer::token_type::int_:
             return parse_vardecl();
@@ -160,7 +164,7 @@ type_syntax parser::parse_type() {
 
         return type_syntax;
     } else {
-        // unimplemented because the only type that exists right now is int
+        // unimplemented because the only type that exists right now are builtin types
         UNIMPLEMENTED();
     }
 
@@ -174,6 +178,8 @@ type_syntax_type parser::get_builtin_type() const {
     switch (peek().type) {
         case token_type::int_:
             return type_syntax_type::int_;
+        case token_type::bool_:
+            return type_syntax_type::bool_;
         default:
             UNREACHABLE();
     }
@@ -184,6 +190,7 @@ bool parser::is_builtin_type(lexer::token_type type) const {
     
     switch (type) {
         case token_type::int_:
+        case token_type::bool_:
             return true;
         default:
             return false;
@@ -218,7 +225,7 @@ expr *parser::parse_expression() {
 }
 
 expr *parser::parse_assignment() {
-    expr *left = parse_term();
+    expr *left = parse_or();
 
     if (peek().type == lexer::token_type::equal) {
         advance();
@@ -232,6 +239,92 @@ expr *parser::parse_assignment() {
         expr *expr = alloc_expr(span, var_assign);
 
         return expr;
+    }
+
+    return left;
+}
+
+expr *parser::parse_or() {
+    expr *left = parse_and();
+    core::span start_span = left->span;
+
+    while (peek().type == lexer::token_type::logical_or) {
+        core::span op_span = advance().span;
+
+        expr *right = parse_and();
+
+        binary binary(core::spanned(binaryop_type::logical_or, op_span), left, right);
+
+        left = alloc_expr(start_span.join(right->span), binary);
+    }
+
+    return left;
+}
+
+expr *parser::parse_and() {
+    expr *left = parse_equality();
+    core::span start_span = left->span;
+
+    while (peek().type == lexer::token_type::logical_and) {
+        core::span op_span = advance().span;
+
+        expr *right = parse_equality();
+
+        binary binary(core::spanned(binaryop_type::logical_and, op_span), left, right);
+
+        left = alloc_expr(start_span.join(right->span), binary);
+    }
+
+    return left;
+}
+
+expr *parser::parse_equality() {
+    expr *left = parse_comparison();
+    core::span start_span = left->span;
+
+    while (core::matches(peek().type, lexer::token_type::equal_equal, lexer::token_type::bang_equal)) {
+        lexer::token op = advance();
+
+        expr *right = parse_comparison();
+
+        binaryop_type type;
+        if (op.type == lexer::token_type::equal_equal) {
+            type = binaryop_type::equal;
+        } else {
+            type = binaryop_type::not_equal;
+        }
+
+        binary binary(core::spanned(type, op.span), left, right);
+
+        left = alloc_expr(start_span.join(right->span), binary);
+    }
+
+    return left;
+}
+
+expr *parser::parse_comparison() {
+    expr *left = parse_term();
+    core::span start_span = left->span;
+
+    while (core::matches(peek().type, lexer::token_type::greater, lexer::token_type::greater_eq, lexer::token_type::less, lexer::token_type::less_eq)) {
+        lexer::token op = advance();
+        
+        expr *right = parse_term();
+
+        binaryop_type type;
+        if (op.type == lexer::token_type::greater) {
+            type = binaryop_type::greater;
+        } else if (op.type == lexer::token_type::greater_eq) {
+            type = binaryop_type::greater_eq;
+        } else if (op.type == lexer::token_type::less) {
+            type = binaryop_type::less;
+        } else {
+            type = binaryop_type::less_eq;
+        }
+
+        binary binary(core::spanned(type, op.span), left, right);
+
+        left = alloc_expr(start_span.join(right->span), binary);
     }
 
     return left;
@@ -294,6 +387,16 @@ expr *parser::parse_unary() {
         expr *expr = alloc_expr(operand->span.join(op_span), unary);
 
         return expr;
+    } else if (peek().type == lexer::token_type::bang) {
+        core::span op_span = advance().span;
+
+        expr *operand = parse_unary();
+
+        unary unary(core::spanned(unaryop_type::logical_not, op_span), operand);
+
+        expr *expr = alloc_expr(operand->span.join(op_span), unary);
+
+        return expr;
     }
 
     return parse_primary();
@@ -347,9 +450,25 @@ expr *parser::parse_primary() {
 
         core::span span = advance().span;
 
-        variable var = { .name = name };
+        variable var(name);
 
         expr *expr = alloc_expr(span, var);
+
+        return expr;
+    } else if (peek().type == lexer::token_type::true_) {
+        core::span span = advance().span;
+        
+        literal lit(true);
+
+        expr *expr = alloc_expr(span, lit);
+
+        return expr;
+    } else if (peek().type == lexer::token_type::false_) {
+        core::span span = advance().span;
+        
+        literal lit(false);
+
+        expr *expr = alloc_expr(span, lit);
 
         return expr;
     } else {

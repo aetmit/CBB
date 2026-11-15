@@ -54,6 +54,8 @@ struct literal {
 
 struct variable {
     std::string_view name;   
+    
+    explicit variable(std::string_view name);
 };
 
 struct var_assign {

@@ -86,6 +86,10 @@ private:
 
     expr *parse_expression();
     expr *parse_assignment();
+    expr *parse_or();
+    expr *parse_and();
+    expr *parse_equality();
+    expr *parse_comparison();
     expr *parse_term();
     expr *parse_factor();
     expr *parse_unary();

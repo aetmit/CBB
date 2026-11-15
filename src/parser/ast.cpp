@@ -43,6 +43,8 @@ exprstmt::exprstmt(struct expr *expr): expr(expr) {}
 
 block::block(std::vector<stmt*> body): body(std::move(body)) {}
 
+variable::variable(std::string_view name): name(name) {}
+
 std::ostream &operator<<(std::ostream &os, const nodeid &id) {
     return os << id.value;
 }

@@ -13,6 +13,11 @@ concept writable_to_stream = requires(std::ostream &os, const T &val) {
     os << val;
 };
 
+template <class T, class U>
+concept equlity_comparable = requires (const T& value, const U& pattern) {
+    { value == pattern } -> std::convertible_to<bool>;
+};
+
 } // namespace core
 
 } // namespace cbb
