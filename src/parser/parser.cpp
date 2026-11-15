@@ -48,6 +48,7 @@ stmt *parser::parse_statement() {
         case lexer::token_type::bang:
             return parse_stmtexpr();
         case lexer::token_type::int_:
+        case lexer::token_type::bool_:
             return parse_vardecl();
         case lexer::token_type::open_brace:
             return parse_block();

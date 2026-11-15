@@ -5,7 +5,6 @@
 #include <new>
 #include <sstream>
 #include <concepts>
-#include <expected>
 #include <memory>
 #include <vector>
 

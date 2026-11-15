@@ -8,6 +8,8 @@ namespace sema {
 enum class type {
     int_,
 
+    bool_,
+
     error,
 };
 
