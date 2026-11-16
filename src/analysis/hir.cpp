@@ -43,6 +43,8 @@ variable::variable(localid id): id(id) {}
 
 literal::literal(std::int32_t integer): value(integer) {}
 
+literal::literal(bool value): value(value) {}
+
 void hir_formatter::indent(std::ostream &out, std::size_t depth) {
     for (std::size_t i = 0; i < depth; ++i) {
         out << "  ";
@@ -74,6 +76,14 @@ const char *hir_formatter::binary_name(binarytype op) {
         case binarytype::sub: return "sub";
         case binarytype::mul: return "mul";
         case binarytype::div: return "div";
+        case binarytype::logical_and: return "logical and";
+        case binarytype::logical_or: return "logical or";
+        case binarytype::equal: return "equal";
+        case binarytype::not_equal: return "not equal";
+        case binarytype::greater: return "greater";
+        case binarytype::greater_eq: return "greater equal";
+        case binarytype::less: return "less";
+        case binarytype::less_eq: return "less equal";
     }
 
     return "unknown";
@@ -82,6 +92,7 @@ const char *hir_formatter::binary_name(binarytype op) {
 const char *hir_formatter::unary_name(unarytype op) {
     switch (op) {
         case unarytype::negate: return "negate";
+        case unarytype::logical_not: return "logical not";
     }
 
     return "unknown";

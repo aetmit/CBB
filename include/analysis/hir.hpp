@@ -17,9 +17,10 @@ struct expr;
 struct stmt;
 
 struct literal {
-    std::variant<std::int32_t> value;
+    std::variant<std::int32_t, bool> value;
 
     explicit literal(std::int32_t value);
+    explicit literal(bool value);
 };
 
 struct variable {
@@ -40,6 +41,17 @@ enum class binarytype {
     sub,
     mul,
     div,
+
+    logical_and,
+    logical_or,
+
+    equal,
+    not_equal,
+
+    greater,
+    greater_eq,
+    less,
+    less_eq,
 };
 
 struct binary {
@@ -52,6 +64,8 @@ struct binary {
 
 enum class unarytype {
     negate,
+
+    logical_not,
 };
 
 struct unary {
