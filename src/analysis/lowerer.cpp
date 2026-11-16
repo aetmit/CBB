@@ -166,6 +166,8 @@ unarytype lowerer::lower_unaryop(ast::unaryop_type op) {
     switch (op) {
         case ast::unaryop_type::negate:
             return unarytype::negate;
+        case ast::unaryop_type::logical_not:
+            return unarytype::logical_not;
     }
 }
 
@@ -194,6 +196,22 @@ binarytype lowerer::lower_binaryop(ast::binaryop_type op) {
             return binarytype::mul;
         case ast::binaryop_type::div:
             return binarytype::div;
+        case ast::binaryop_type::logical_and:
+            return binarytype::logical_and;
+        case ast::binaryop_type::logical_or:
+            return binarytype::logical_or;
+        case ast::binaryop_type::equal:
+            return binarytype::equal;
+        case ast::binaryop_type::not_equal:
+            return binarytype::not_equal;
+        case ast::binaryop_type::greater:
+            return binarytype::greater;
+        case ast::binaryop_type::greater_eq:
+            return binarytype::greater_eq;
+        case ast::binaryop_type::less:
+            return binarytype::less;
+        case ast::binaryop_type::less_eq:
+            return binarytype::less_eq;
     }
 }
 
