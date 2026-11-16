@@ -1,6 +1,7 @@
 #include "analysis/type_checker.hpp"
 
 #include <limits>
+#include <sstream>
 
 #include "core/overloaded.hpp"
 #include "core/error.hpp"
@@ -60,8 +61,25 @@ bool type_checker::convertible(type from, type target) const {
         return true;
     }
 
-    if (static_cast<int>(type::error) != 2) {
-        FATAL("come here and actually fix this");
+    static_assert(static_cast<int>(type::error) == 2, "fix type checking");
+
+    if (from == type::error || target == type::error) {
+        return true;
+    }
+
+    switch (from) {
+        case type::int_: 
+            switch (target) {
+                case type::bool_:
+                    return false;
+            }
+            break;
+        case type::bool_:
+            switch (target) {
+                case type::int_:
+                    return false;
+            }
+            break;
     }
 
     return false;
@@ -127,26 +145,42 @@ type_info type_checker::check_variable(const ast::variable&, nodedata data, cont
     return ctx.var_types.at(id);
 }
 
-type_info type_checker::check_unary(const ast::unary &unary, nodedata, context &ctx) {
+type_info type_checker::check_unary(const ast::unary &unary, nodedata data, context &ctx) {
     type_info operand_type = check_expr(*unary.operand, ctx);
 
     std::optional<type> res = check_unary_type(unary.op.node, operand_type.type);
 
     if (!res) {
-        FATAL("shouldnt happen");
+        std::ostringstream oss;
+        oss << "unary operator '";
+        oss << unary.op.node;
+        oss << "' cannot be applied to type: '";
+        oss << operand_type.type;
+        oss << "'";
+        error(oss.rdbuf(), data.span, ctx);
+        return type_info(type::error, value_cat::invalid); 
     }
 
     return type_info(*res, value_cat::rvalue);
 }
 
-type_info type_checker::check_binary(const ast::binary &binary, nodedata, context &ctx) {
+type_info type_checker::check_binary(const ast::binary &binary, nodedata data, context &ctx) {
     type_info left_type = check_expr(*binary.left, ctx);
     type_info right_type = check_expr(*binary.right, ctx);
 
     std::optional<type> res = check_binary_type(binary.op.node, left_type.type, right_type.type);
 
     if (!res) {
-        FATAL("shouldnt happen");
+        std::ostringstream oss;
+        oss << "binary operator '";
+        oss << binary.op.node;
+        oss << "' cannot be applied to types: '";
+        oss << left_type.type;
+        oss << "' and '";
+        oss << right_type.type;
+        oss << "'";
+        error(oss.rdbuf(), data.span, ctx);
+        return type_info(type::error, value_cat::invalid);
     }
 
     return type_info(*res, value_cat::rvalue);
@@ -156,10 +190,17 @@ type_info type_checker::check_literal(const ast::literal &literal, nodedata data
     type_info res = std::visit(core::overloaded {
         [&, this](std::uint64_t integer) -> type_info {
             return check_int_literal(integer, data, ctx);
+        },
+        [&, this](bool boolean) -> type_info {
+            return check_boolean_literal(boolean, data, ctx);
         }
     }, literal.value);
 
     return res;
+}
+
+type_info type_checker::check_boolean_literal(bool, nodedata, context&) {
+    return type_info(type::bool_, value_cat::rvalue);
 }
 
 type_info type_checker::check_int_literal(std::uint64_t integer, nodedata, context&) {
@@ -171,26 +212,73 @@ type_info type_checker::check_int_literal(std::uint64_t integer, nodedata, conte
     }
 }
 
-std::optional<type> type_checker::check_unary_type(ast::unaryop_type, type a) const {
+std::optional<type> type_checker::check_unary_type(ast::unaryop_type op, type a) const {
     if (a == type::error) {
         return type::error;
     }
 
-    if (static_cast<int>(type::error) != 1) {
-        FATAL("someone added new types so actually implement this");
-    }
+    static_assert(static_cast<int>(type::error) == 2, "fix type checking");
 
-    return type::int_;
+    using ast::unaryop_type;
+
+    switch (op) {
+        case unaryop_type::logical_not:
+            if (a != type::bool_) {
+                return std::nullopt;
+            }
+            return type::bool_;
+        case unaryop_type::negate:
+            if (a != type::int_) {
+                return std::nullopt;
+            }
+            return type::int_;
+    }
 }
 
-std::optional<type> type_checker::check_binary_type(ast::binaryop_type, type lhs, type rhs) const {
+std::optional<type> type_checker::check_binary_type(ast::binaryop_type op, type lhs, type rhs) const {
     if (lhs == type::error || rhs == type::error) {
         return type::error;
     }
 
-    if (static_cast<int>(type::error) != 1) {
-        FATAL("just check here and actually implement type checking here when there are actually some more types");
+    // i cannot be bothered to type that too many times in the switches
+    using ast::binaryop_type;
+
+    static_assert(static_cast<int>(type::error) == 2, "fix type checking");
+
+    switch (op) {
+        case binaryop_type::add:
+        case binaryop_type::sub:
+        case binaryop_type::mul:
+        case binaryop_type::div:
+            if (lhs == type::int_ && rhs == type::int_) {
+                return type::int_;
+            } else {
+                return std::nullopt;
+            }
+            break;
+        case binaryop_type::equal:
+        case binaryop_type::not_equal:
+            // currently this is always valid because equality can be aplied on both int and bool
+            // and both result in bool
+            return type::bool_;
+        case binaryop_type::logical_and:
+        case binaryop_type::logical_or:
+            if (lhs == type::bool_ && rhs == type::bool_) {
+                return type::bool_;
+            } else {
+                return std::nullopt;
+            }
+        case binaryop_type::greater:
+        case binaryop_type::greater_eq:
+        case binaryop_type::less:
+        case binaryop_type::less_eq:
+            if (lhs == type::int_ && rhs == type::int_) {
+                return type::bool_;
+            } else {
+                return std::nullopt;
+            }
     }
+
     return type::int_;
 }
 

@@ -1,6 +1,8 @@
 #ifndef CBB_ANALYSIS_TYPE_HPP
 #define CBB_ANALYSIS_TYPE_HPP
 
+#include <ostream>
+
 namespace cbb {
 
 namespace sema {
@@ -12,6 +14,8 @@ enum class type {
 
     error,
 };
+
+std::ostream &operator<<(std::ostream &os, const type &type);
 
 enum class value_cat {
     lvalue,

@@ -56,6 +56,7 @@ private:
     type_info check_binary(const parser::binary &binary, nodedata data, context &ctx);
     type_info check_literal(const parser::literal &literal, nodedata data, context &ctx);
     type_info check_int_literal(std::uint64_t integer, nodedata data, context &ctx);
+    type_info check_boolean_literal(bool boolean, nodedata data, context &ctx);
     type_info check_unary(const parser::unary &unary, nodedata data, context &ctx);
     type_info check_variable(const parser::variable &variable, nodedata data, context &ctx);
     type_info check_var_assign(const parser::var_assign &var_assign, nodedata data, context &ctx);
