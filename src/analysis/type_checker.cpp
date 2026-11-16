@@ -72,12 +72,16 @@ bool type_checker::convertible(type from, type target) const {
             switch (target) {
                 case type::bool_:
                     return false;
+                case type::int_:
+                    return true;
             }
             break;
         case type::bool_:
             switch (target) {
                 case type::int_:
                     return false;
+                case type::bool_:
+                    return true;
             }
             break;
     }
@@ -288,6 +292,8 @@ type type_checker::get_annotation_type(parser::type_syntax syntax) const {
     switch (syntax.type) {
         case type_syntax_type::int_:        
             return type::int_;
+        case type_syntax_type::bool_:
+            return type::bool_;
         default:
             return type::error;
     }

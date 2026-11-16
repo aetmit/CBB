@@ -54,6 +54,7 @@ void hir_formatter::indent(std::ostream &out, std::size_t depth) {
 const char *hir_formatter::type_name(type t) {
     switch (t) {
         case type::int_: return "int";
+        case type::bool_: return "bool";
         case type::error: return "error";
     }
 
