@@ -41,6 +41,8 @@ enum class token_type {
     logical_or,
     bang,
 
+    return_,
+
     // _ postfix because we avoid conflict with the c++ keywords
     true_,
     false_,
