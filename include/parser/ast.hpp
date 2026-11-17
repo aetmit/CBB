@@ -223,7 +223,7 @@ struct program {
     // with unique_ptr we can then sorta move the arena but the allocation stays the same
     // its just the pointer that gets moved
     std::unique_ptr<core::arena> arena;
-    std::vector<stmt*> body;
+    std::vector<function*> body;
 };
 
 // these overloads reconstruct the ast back into source code 
@@ -246,6 +246,9 @@ std::ostream &operator<<(std::ostream &os, const binaryop_type &binaryop_type);
 std::ostream &operator<<(std::ostream &os, const var_assign &var_assign);
 std::ostream &operator<<(std::ostream &os, const variable &variable);
 std::ostream &operator<<(std::ostream &os, const literal &literal);
+std::ostream &operator<<(std::ostream &os, const function &function);
+std::ostream &operator<<(std::ostream &os, const function_block &function_block);
+std::ostream &operator<<(std::ostream &os, const param &param);
 
 class ast_formatter {
 public:
@@ -259,6 +262,8 @@ private:
     void format_type_syntax(std::ostream &os, const type_syntax &type, std::size_t indent) const;
     void format_expression(std::ostream &os, const expr *expression, std::size_t indent) const;
     void format_statement(std::ostream &os, const stmt *statement, std::size_t indent) const;
+    void format_function(std::ostream &os, const function *function, std::size_t indent) const;
+    void format_function_block(std::ostream &os, const function_block &block, std::size_t indent) const;
 };
 
 
