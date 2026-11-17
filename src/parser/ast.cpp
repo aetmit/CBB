@@ -45,6 +45,13 @@ block::block(std::vector<stmt*> body): body(std::move(body)) {}
 
 variable::variable(std::string_view name): name(name) {}
 
+function_block::function_block(nodeid id, core::span span, block block): id(id), span(span), body(std::move(block)) {}
+
+param::param(nodeid id, std::string_view name, type_syntax type): id(id), name(name), type(type) {}
+
+function::function(functionid id, core::span span, std::string_view name, type_syntax return_type, std::optional<function_block> body, std::vector<param> params):
+    id(id), span(span), name(name), return_type(return_type), body(body), params(std::move(params)) {}
+
 std::ostream &operator<<(std::ostream &os, const nodeid &id) {
     return os << id.value;
 }

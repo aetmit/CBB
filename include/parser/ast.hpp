@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <string_view>
+#include <optional>
 #include <memory>
 #include <variant>
 #include <ostream>
@@ -27,6 +28,14 @@ struct nodeid {
     bool operator==(const nodeid&) const = default;
 };
 
+struct functionid {
+    std::size_t value;
+
+    explicit constexpr functionid(std::size_t value): value(value) {}
+
+    bool operator==(const functionid&) const = default;
+};
+
 } // namespace parser
 
 } // namespace cbb
@@ -34,6 +43,13 @@ struct nodeid {
 template <>
 struct std::hash<cbb::parser::nodeid> {
     std::size_t operator()(const cbb::parser::nodeid &id) const noexcept {
+        return std::hash<std::size_t>{}(id.value);
+    }
+};
+
+template <>
+struct std::hash<cbb::parser::functionid> {
+    std::size_t operator()(const cbb::parser::functionid &id) const noexcept {
         return std::hash<std::size_t>{}(id.value);
     }
 };
@@ -167,6 +183,38 @@ struct stmt {
     stmt(nodeid id, core::span span, var_decl var_decl);
     stmt(nodeid id, core::span span, block block);
     stmt(nodeid id, core::span span);
+};
+
+// we do this because a block itself does not contain and id or span
+struct function_block {
+    nodeid id;
+    core::span span;
+    block body;
+
+    function_block(nodeid id, core::span span, block block);
+};
+
+struct param {
+    nodeid id;
+    std::string_view name;
+    type_syntax type;
+
+    param(nodeid id, std::string_view name, type_syntax type);
+};
+
+struct function {
+    functionid id;
+
+    core::span span;
+
+    std::string_view name;
+    type_syntax return_type;
+    // optional because we could have a function declaration but not have the definition
+    std::optional<function_block> body;
+
+    std::vector<param> params;
+
+    function(functionid id, core::span span, std::string_view name, type_syntax return_type, std::optional<function_block> body, std::vector<param> params);
 };
 
 struct program {
