@@ -74,6 +74,9 @@ bool type_checker::convertible(type from, type target) const {
                     return false;
                 case type::int_:
                     return true;
+                case type::error:
+                    UNREACHABLE();
+                    break;
             }
             break;
         case type::bool_:
@@ -82,7 +85,14 @@ bool type_checker::convertible(type from, type target) const {
                     return false;
                 case type::bool_:
                     return true;
+                case type::error:
+                    UNREACHABLE();
+                    break;
             }
+            break;
+        case type::error:
+            // do nothing because it should be unreachable
+            UNREACHABLE();
             break;
     }
 
@@ -161,7 +171,7 @@ type_info type_checker::check_unary(const ast::unary &unary, nodedata data, cont
         oss << "' cannot be applied to type: '";
         oss << operand_type.type;
         oss << "'";
-        error(oss.rdbuf(), data.span, ctx);
+        error(oss.str(), data.span, ctx);
         return type_info(type::error, value_cat::invalid); 
     }
 
@@ -183,7 +193,7 @@ type_info type_checker::check_binary(const ast::binary &binary, nodedata data, c
         oss << "' and '";
         oss << right_type.type;
         oss << "'";
-        error(oss.rdbuf(), data.span, ctx);
+        error(oss.str(), data.span, ctx);
         return type_info(type::error, value_cat::invalid);
     }
 
@@ -222,7 +232,6 @@ std::optional<type> type_checker::check_unary_type(ast::unaryop_type op, type a)
     }
 
     static_assert(static_cast<int>(type::error) == 2, "fix type checking");
-
     using ast::unaryop_type;
 
     switch (op) {
