@@ -90,6 +90,9 @@ token lexer::next() {
         case ';':
             advance();
             return create_token(token_type::semicolon);
+        case ',':
+            advance();
+            return create_token(token_type::comma);
         default:
             if (std::isdigit(static_cast<unsigned char>(c))) {
                 while (!is_at_end() && std::isdigit(static_cast<unsigned char>(peek()))) {

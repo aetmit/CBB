@@ -5,6 +5,7 @@
 #include <new>
 #include <sstream>
 #include <concepts>
+#include <expected>
 #include <memory>
 #include <vector>
 
@@ -31,6 +32,7 @@ private:
     lexer::lexer::iterator current_;
 
     nodeid current_nodeid_; 
+    functionid current_functionid_;
 
     // reference to arena in the program
     std::unique_ptr<core::arena> *arena_;
@@ -41,6 +43,7 @@ private:
     lexer::token advance();
 
     nodeid next_nodeid();
+    functionid next_functionid();
 
     void sync();
 
@@ -64,6 +67,9 @@ private:
         return stmt;
     }
 
+    function *alloc_function(core::span span, std::string_view name, type_syntax return_type, std::optional<function_block> body, std::vector<param> params);
+    function *alloc_function(core::span span);
+
     template <class T>
     requires core::writable_to_stream<T>
     void error(T msg, core::span span) {
@@ -74,6 +80,10 @@ private:
 
     stmt *alloc_stmt(core::span span);
 
+    function *parse_function();
+    std::expected<param, core::span> parse_param();
+    std::expected<function_block, core::span> parse_function_body();
+
     stmt *parse_statement();
     stmt *parse_stmtexpr();
     stmt *parse_vardecl();
@@ -82,6 +92,7 @@ private:
     type_syntax parse_type();
     bool is_builtin_type(lexer::token_type type) const;
     type_syntax_type get_builtin_type() const;
+    bool is_typename(lexer::token_type type) const;
 
     expr *parse_expression();
     expr *parse_assignment();

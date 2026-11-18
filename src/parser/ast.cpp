@@ -92,6 +92,9 @@ function::function(
     body(std::move(body)),
     params(std::move(params)) {}
 
+function::function(functionid id, core::span span):
+    id(id), span(span), body(std::nullopt) {}
+
 std::ostream &operator<<(std::ostream &os, const nodeid &id) {
     return os << id.value;
 }
@@ -262,10 +265,6 @@ std::ostream &operator<<(std::ostream &os, const program &program) {
 
     return os;
 }
-
-// -----------------------------------------------------------------------------
-// AST formatter
-// -----------------------------------------------------------------------------
 
 std::string ast_formatter::format(const program &program) {
     std::ostringstream os;

@@ -11,7 +11,7 @@ namespace cbb {
 namespace parser {
 
 parser::parser(std::string_view source, std::vector<core::diagnostic> &diagnostics): 
-    source_(source), tokenstream_(source), current_(tokenstream_.begin()), current_nodeid_(0), arena_(nullptr), diagnostics_(diagnostics) {}
+    source_(source), tokenstream_(source), current_(tokenstream_.begin()), current_nodeid_(0), current_functionid_(0), arena_(nullptr), diagnostics_(diagnostics) {}
 
 lexer::token parser::peek() const {
     return *current_;
@@ -26,15 +26,178 @@ lexer::token parser::advance() {
 program parser::parse() {
     auto arena = std::make_unique<core::arena>();
 
-    std::vector<stmt*> stmts;
+    std::vector<function*> functions;
 
     arena_ = &arena;
 
     while (current_ != tokenstream_.end()) {
+        functions.push_back(parse_function());
+    }
+
+    return { std::move(arena), std::move(functions) };
+}
+
+function *parser::parse_function() {
+    if (!is_typename(peek().type)) {
+        core::span span = peek().span;
+
+        error("expected typename", span);
+
+        sync();
+
+        function *function = alloc_function(span);
+        return function;
+    }
+
+    core::span start_span = peek().span;
+
+    type_syntax return_type = parse_type();
+
+    if (peek().type != lexer::token_type::identifier) {
+        core::span span = peek().span;
+
+        error("expected identifier", span);
+
+        sync();
+
+        function *function = alloc_function(span);
+        return function;
+    }
+
+    core::span ident_span = advance().span;
+    std::string_view identifier = ident_span.retrieve_lexeme(source_);
+
+    if (peek().type != lexer::token_type::open_paren) {
+        core::span span = peek().span;
+
+        error("expected '('", span);
+
+        sync();
+
+        function *function = alloc_function(span);
+        return function;
+    }
+
+    std::vector<param> params;
+    while (peek().type != lexer::token_type::eof && peek().type != lexer::token_type::close_paren) {
+        auto res = parse_param();
+        if (!res) {
+            function *function = alloc_function(res.error());
+            return function;
+        }
+        params.push_back(*res);
+
+        if (peek().type != lexer::token_type::comma) {
+            break;
+        }
+
+        advance();
+    }
+
+    if (peek().type != lexer::token_type::close_paren) {
+        core::span span = peek().span;
+
+        error("expected ')'", span);
+        
+        sync();
+
+        function *function = alloc_function(span);
+        return function;
+    }
+
+    advance();
+
+    if (peek().type == lexer::token_type::semicolon) {
+        function *function = alloc_function(start_span.join(advance().span), identifier, return_type, std::nullopt, params);
+        return function;
+    } else if (peek().type == lexer::token_type::open_brace) {
+        auto res = parse_function_body();
+        if (!res) {
+            function *function = alloc_function(res.error());
+            return function;
+        }
+        function *function = alloc_function(start_span.join(peek().span), identifier, return_type, *res, params);
+        return function;
+    } else {
+        core::span span = peek().span;
+
+        error("expected ';'", span);
+
+        sync();
+
+        function *function = alloc_function(span);
+        return function;
+    }
+}
+
+std::expected<function_block, core::span> parser::parse_function_body() {
+    core::span start_span = advance().span;
+
+    std::vector<stmt*> stmts;
+
+    while (peek().type != lexer::token_type::eof) {
+        if (peek().type == lexer::token_type::close_brace) {
+            break;
+        }
         stmts.push_back(parse_statement());
     }
 
-    return { std::move(arena), std::move(stmts) };
+    lexer::token end_token = advance();
+
+    if (end_token.type != lexer::token_type::close_brace) {
+        error("unterminated block", end_token.span) ;
+
+        sync();
+
+        return std::unexpected(end_token.span);
+    }
+
+    core::span block_span = start_span.join(end_token.span);
+    function_block function_block(next_nodeid(), block_span, block(stmts));
+    return function_block;
+}
+
+std::expected<param, core::span> parser::parse_param() {
+    if (!is_typename(peek().type)) {
+        core::span span = peek().span;
+
+        error("expected typename", span);
+
+        sync();
+        
+        return std::unexpected(span);
+    }
+
+    type_syntax type = parse_type();
+
+    if (peek().type != lexer::token_type::identifier) {
+        core::span span = peek().span;
+
+        error("expected identifier", span);
+
+        sync();
+
+        return std::unexpected(span);
+    }
+
+    core::span identifer_span = peek().span;
+    std::string_view identifier = identifer_span.retrieve_lexeme(source_);
+
+    advance();
+
+    return param(next_nodeid(), identifier, type);
+}
+
+bool parser::is_typename(lexer::token_type type) const {
+    using lexer::token_type;
+    switch (type) {
+        case token_type::int_:
+        case token_type::bool_:
+        case token_type::identifier:
+            return true;
+        default:
+            return false;
+    }
 }
 
 stmt *parser::parse_statement() {
@@ -529,6 +692,28 @@ stmt *parser::alloc_stmt(core::span span) {
     stmt *stmt = new (memory) struct stmt(next_nodeid(), span);
 
     return stmt;
+}
+
+functionid parser::next_functionid() {
+    functionid tmp = current_functionid_;
+    current_functionid_.value++;
+    return tmp;
+}
+
+function *parser::alloc_function(core::span span, std::string_view name, type_syntax return_type, std::optional<function_block> body, std::vector<param> params) {
+    void *memory = (*arena_)->allocate(sizeof(function), alignof(function));
+
+    function *function = new (memory) struct function(next_functionid(), span, name, return_type, body, params);
+
+    return function;
+}
+
+function *parser::alloc_function(core::span span) {
+    void *memory = (*arena_)->allocate(sizeof(function), alignof(function));
+
+    function *function = new (memory) struct function(next_functionid(), span);
+
+    return function;
 }
     
 } // namespace parser

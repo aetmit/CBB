@@ -215,6 +215,8 @@ struct function {
     std::vector<param> params;
 
     function(functionid id, core::span span, std::string_view name, type_syntax return_type, std::optional<function_block> body, std::vector<param> params);
+    // for functions with errors
+    function(functionid id, core::span span);
 };
 
 struct program {
