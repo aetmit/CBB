@@ -88,11 +88,15 @@ private:
     stmt *parse_stmtexpr();
     stmt *parse_vardecl();
     stmt *parse_block();
+    stmt *parse_return();
     
     type_syntax parse_type();
     bool is_builtin_type(lexer::token_type type) const;
     type_syntax_type get_builtin_type() const;
     bool is_typename(lexer::token_type type) const;
+
+    // checks if the token the parser is pointing to can be used to start an expression
+    bool is_expression_starter() const;
 
     expr *parse_expression();
     expr *parse_assignment();

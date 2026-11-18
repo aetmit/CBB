@@ -77,6 +77,9 @@ function_block::function_block(nodeid id, core::span span, block block):
 param::param(nodeid id, std::string_view name, type_syntax type):
     id(id), name(name), type(type) {}
 
+stmt::stmt(nodeid id, core::span span, return_stmt return_stmt): 
+    id(id), span(span), value(std::in_place_type<struct return_stmt>, return_stmt) {}
+
 function::function(
     functionid id,
     core::span span,
@@ -95,8 +98,20 @@ function::function(
 function::function(functionid id, core::span span):
     id(id), span(span), body(std::nullopt) {}
 
+return_stmt::return_stmt(std::optional<expr*> value): value(value) {}
+
 std::ostream &operator<<(std::ostream &os, const nodeid &id) {
     return os << id.value;
+}
+
+std::ostream &operator<<(std::ostream &os, const return_stmt &return_stmt) {
+    os << "return";
+
+    if (return_stmt.value.has_value() && *return_stmt.value != nullptr) {
+        os << " " << **return_stmt.value;
+    }
+
+    return os << ";";
 }
 
 std::ostream &operator<<(std::ostream &os, const binaryop_type &op) {
@@ -566,6 +581,22 @@ void ast_formatter::format_statement(
                     os << "\n";
                     format_statement(os, value.body[i], indent + 2);
                 }
+            }
+        } else if constexpr (std::is_same_v<T, return_stmt>) {
+            os << "ReturnStatement (id=" << statement->id << ")\n";
+
+            write_indent(os, indent + 1);
+            os << "span: ";
+            write_span(os, statement->span);
+            os << "\n";
+
+            write_indent(os, indent + 1);
+
+            if (!value.value.has_value() || *value.value == nullptr) {
+                os << "value: <none>\n";
+            } else {
+                os << "value:\n";
+                format_expression(os, *value.value, indent + 2);
             }
         }
     }, statement->value);

@@ -173,15 +173,22 @@ struct block {
     explicit block(std::vector<stmt*> body);
 };
 
+struct return_stmt {
+    std::optional<expr*> value; 
+
+    explicit return_stmt(std::optional<expr*> value);
+};
+
 struct stmt {
     nodeid id;
     core::span span;
 
-    std::variant<std::monostate, exprstmt, var_decl, block> value;
+    std::variant<std::monostate, exprstmt, var_decl, block, return_stmt> value;
 
     stmt(nodeid id, core::span span, exprstmt exprstmt);
     stmt(nodeid id, core::span span, var_decl var_decl);
     stmt(nodeid id, core::span span, block block);
+    stmt(nodeid id, core::span span, return_stmt return_stmt);
     stmt(nodeid id, core::span span);
 };
 
@@ -251,6 +258,8 @@ std::ostream &operator<<(std::ostream &os, const literal &literal);
 std::ostream &operator<<(std::ostream &os, const function &function);
 std::ostream &operator<<(std::ostream &os, const function_block &function_block);
 std::ostream &operator<<(std::ostream &os, const param &param);
+std::ostream &operator<<(std::ostream &os, const return_stmt &return_stmt);
+std::ostream &operator<<(std::ostream &os, const nodeid &id);
 
 class ast_formatter {
 public:

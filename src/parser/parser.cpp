@@ -201,20 +201,18 @@ bool parser::is_typename(lexer::token_type type) const {
 }
 
 stmt *parser::parse_statement() {
+    if (is_expression_starter()) {
+        return parse_stmtexpr();
+    }
+
     switch (peek().type) {
-        case lexer::token_type::integer_literal:
-        case lexer::token_type::open_paren:
-        case lexer::token_type::identifier:
-        case lexer::token_type::minus:
-        case lexer::token_type::true_:
-        case lexer::token_type::false_:
-        case lexer::token_type::bang:
-            return parse_stmtexpr();
         case lexer::token_type::int_:
         case lexer::token_type::bool_:
             return parse_vardecl();
         case lexer::token_type::open_brace:
             return parse_block();
+        case lexer::token_type::return_:
+            return parse_return();
         default:
             core::span span = peek().span;
             std::stringstream ss;
@@ -226,6 +224,57 @@ stmt *parser::parse_statement() {
             
             stmt *stmt = alloc_stmt(span);
             return stmt;
+    }
+}
+stmt *parser::parse_return() {
+    core::span start_span = advance().span;
+
+    // this token is already guarenteed to be the return token
+    advance();
+
+    if (peek().type == lexer::token_type::semicolon) {
+        return_stmt return_(std::nullopt);
+        stmt *stmt = alloc_stmt(start_span.join(peek().span), return_);
+        return stmt;
+    } else if (is_expression_starter()) {
+        expr *value = parse_expression();
+
+        if (peek().type != lexer::token_type::semicolon) {
+            core::span span = peek().span;
+
+            error("expected ';'", span);
+            sync();
+
+            stmt *expr = alloc_stmt(span);
+            return expr;
+        }
+
+        core::span end_span = advance().span;
+
+        return_stmt return_(value);
+
+        stmt *stmt = alloc_stmt(start_span.join(end_span), return_);
+        return stmt;
+    } else {
+        core::span span = peek().span;
+
+        stmt *stmt = alloc_stmt(span);
+        return stmt;
+    }
+}
+
+bool parser::is_expression_starter() const {
+    switch (peek().type) {
+        case lexer::token_type::integer_literal:
+        case lexer::token_type::open_paren:
+        case lexer::token_type::identifier:
+        case lexer::token_type::minus:
+        case lexer::token_type::true_:
+        case lexer::token_type::false_:
+        case lexer::token_type::bang:    
+            return true;
+        default:
+            return false;
     }
 }
 
