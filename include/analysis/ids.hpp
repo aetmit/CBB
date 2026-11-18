@@ -26,6 +26,16 @@ struct localid {
 
 };
 
+struct functionid {
+    std::size_t value;
+
+    explicit constexpr functionid(std::size_t value): value(value) {}
+
+    static constexpr functionid error() {
+        return functionid(std::numeric_limits<std::size_t>::max());
+    }
+};
+
 std::ostream &operator<<(std::ostream &os, const localid &id);
 
 struct hirid {
