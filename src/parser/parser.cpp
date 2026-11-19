@@ -619,9 +619,6 @@ expr *parser::parse_postfix() {
 
     while (core::matches(peek().type, lexer::token_type::open_paren)) {
         lexer::token_type op_type = peek().type;
-        core::span span = advance().span;
-
-        core::span expr_span = left->span;
 
         if (op_type == lexer::token_type::open_paren) {
             std::vector<expr*> args;
