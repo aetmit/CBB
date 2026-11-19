@@ -66,3 +66,7 @@ build/
 Dockerfile
 
 terminal.sh
+
+deletre.txt
+
+concat_sema.sh
