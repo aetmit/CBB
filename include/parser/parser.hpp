@@ -107,6 +107,7 @@ private:
     expr *parse_term();
     expr *parse_factor();
     expr *parse_unary();
+    expr *parse_postfix();
     expr *parse_primary();
 };
     

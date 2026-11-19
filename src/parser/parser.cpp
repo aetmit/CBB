@@ -229,12 +229,10 @@ stmt *parser::parse_statement() {
 stmt *parser::parse_return() {
     core::span start_span = advance().span;
 
-    // this token is already guarenteed to be the return token
-    advance();
-
     if (peek().type == lexer::token_type::semicolon) {
+        core::span end_span = advance().span;
         return_stmt return_(std::nullopt);
-        stmt *stmt = alloc_stmt(start_span.join(peek().span), return_);
+        stmt *stmt = alloc_stmt(start_span.join(end_span), return_);
         return stmt;
     } else if (is_expression_starter()) {
         expr *value = parse_expression();
@@ -612,7 +610,48 @@ expr *parser::parse_unary() {
         return expr;
     }
 
-    return parse_primary();
+    return parse_postfix();
+} 
+
+expr *parser::parse_postfix() {
+    expr *left = parse_primary();
+    core::span start_span = left->span;
+
+    while (core::matches(peek().type, lexer::token_type::open_paren)) {
+        lexer::token_type op_type = peek().type;
+        core::span span = advance().span;
+
+        core::span expr_span = left->span;
+
+        if (op_type == lexer::token_type::open_paren) {
+            std::vector<expr*> args;
+            while (peek().type != lexer::token_type::close_paren) {
+                args.push_back(parse_expression());
+
+                if (peek().type != lexer::token_type::comma) {
+                    break;
+                }
+
+                advance();
+            }
+
+            if (peek().type != lexer::token_type::close_paren) {
+                core::span span = peek().span;
+                error("expetced ')'", span);
+
+                sync();
+                expr *expr = alloc_expr(span);
+                return expr;
+            }
+
+            core::span end_span = advance().span;
+
+            call call(left, args);
+            left = alloc_expr(start_span.join(end_span), call);
+        }
+    }
+    
+    return left;
 }
 
 expr *parser::parse_primary() {

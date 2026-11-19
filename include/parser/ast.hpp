@@ -123,17 +123,26 @@ struct unary {
     unary(unaryop op, expr *operand);
 };
 
+struct call {
+    expr *callee;
+    
+    std::vector<expr*> arguments;
+
+    call(expr *callee, std::vector<expr*> arguments);
+};
+
 struct expr {
     nodeid id;
     core::span span;
 
-    std::variant<std::monostate, literal, binary, unary, variable, var_assign> value;
+    std::variant<std::monostate, literal, binary, unary, variable, var_assign, call> value;
 
     expr(nodeid id, core::span span, literal literal);
     expr(nodeid id, core::span span, binary binary);
     expr(nodeid id, core::span span, unary unary);
     expr(nodeid id, core::span span, variable variable);
     expr(nodeid id, core::span span, var_assign var_assign);
+    expr(nodeid id, core::span span, call call);
     expr(nodeid id, core::span span);
 };
 
@@ -260,6 +269,7 @@ std::ostream &operator<<(std::ostream &os, const function_block &function_block)
 std::ostream &operator<<(std::ostream &os, const param &param);
 std::ostream &operator<<(std::ostream &os, const return_stmt &return_stmt);
 std::ostream &operator<<(std::ostream &os, const nodeid &id);
+std::ostream &operator<<(std::ostream &os, const call &call);
 
 class ast_formatter {
 public:

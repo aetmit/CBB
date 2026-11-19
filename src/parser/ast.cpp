@@ -29,6 +29,10 @@ expr::expr(nodeid id, core::span span, var_assign var_assign):
     id(id), span(span),
     value(std::in_place_type<struct var_assign>, std::move(var_assign)) {}
 
+expr::expr(nodeid id, core::span span, call call):
+    id(id), span(span),
+    value(std::in_place_type<struct call>, std::move(call)) {}
+
 expr::expr(nodeid id, core::span span):
     id(id), span(span),
     value(std::in_place_type<std::monostate>) {}
@@ -94,6 +98,8 @@ function::function(
     return_type(return_type),
     body(std::move(body)),
     params(std::move(params)) {}
+
+call::call(expr *callee, std::vector<expr*> arguments): callee(callee), arguments(arguments) {}
 
 function::function(functionid id, core::span span):
     id(id), span(span), body(std::nullopt) {}
@@ -195,6 +201,20 @@ std::ostream &operator<<(std::ostream &os, const var_decl &decl) {
     }
 
     return os << ";";
+}
+
+std::ostream &operator<<(std::ostream &os, const call &call) {
+    os << *call.callee << "(";
+
+    for (std::size_t i = 0; i < call.arguments.size(); ++i) {
+        if (i != 0) {
+            os << ", ";
+        }
+
+        os << *call.arguments[i];
+    }
+
+    return os << ")";
 }
 
 std::ostream &operator<<(std::ostream &os, const block &block) {
@@ -504,6 +524,27 @@ void ast_formatter::format_expression(
             write_indent(os, indent + 1);
             os << "value:\n";
             format_expression(os, value.value, indent + 2);
+        } else if constexpr (std::is_same_v<T, call>) {
+            os << "CallExpression (id=" << expression->id << ")\n";
+
+            write_indent(os, indent + 1);
+            os << "span: ";
+            write_span(os, expression->span);
+            os << "\n";
+
+            write_indent(os, indent + 1);
+            os << "callee:\n";
+            format_expression(os, value.callee, indent + 2);
+
+            write_indent(os, indent + 1);
+            os << "arguments (" << value.arguments.size() << "):\n";
+
+            for (std::size_t i = 0; i < value.arguments.size(); ++i) {
+                write_indent(os, indent + 2);
+                os << "argument[" << i << "]:\n";
+
+                format_expression(os, value.arguments[i], indent + 3);
+            }
         }
     }, expression->value);
 }
