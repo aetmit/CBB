@@ -14,6 +14,7 @@ struct scope {
     scope() = default;
 
     std::unordered_map<std::string_view, localid> variables;
+    std::unordered_map<std::string_view, functionid> functions;
 };
     
 } // namespace sema 

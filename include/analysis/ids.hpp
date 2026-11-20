@@ -34,6 +34,10 @@ struct functionid {
     static constexpr functionid error() {
         return functionid(std::numeric_limits<std::size_t>::max());
     }
+
+    bool operator==(const functionid&) const = default;
+
+    functionid &operator++();
 };
 
 std::ostream &operator<<(std::ostream &os, const localid &id);
@@ -59,5 +63,11 @@ struct std::hash<cbb::sema::localid> {
     }
 };
 
+template <>
+struct std::hash<cbb::sema::functionid> {
+    std::size_t operator()(const cbb::sema::functionid &id) const noexcept {
+        return std::hash<std::size_t>{}(id.value);
+    }
+};
 
 #endif // CBB_ANALYSIS_IDS_HPP

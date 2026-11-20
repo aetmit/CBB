@@ -1,6 +1,8 @@
 #include "analysis/resolution.hpp"
 
 #include <format>
+#include <ranges>
+#include <utility>
 
 #include "core/overloaded.hpp"
 #include "core/error.hpp"
@@ -11,15 +13,54 @@ namespace sema {
 
 namespace ast = parser;
 
-resolver::resolver(): current_local_id_(0) {}
+signature::signature(type return_type, std::vector<type> param_types): return_type(return_type), param_types(std::move(param_types)) {}
+
+function_info::function_info(signature sig, bool defined): sig(sig), defined(defined) {}
+
+resolver::resolver(): current_local_id_(0), current_function_id_(0), in_fn_(false) {}
 
 void resolver::resolve(const ast::program &program, context &ctx) {
     enter_scope(ctx);
     for (auto it = program.body.begin(); it != program.body.end(); ++it)  {
-        resolve_stmt(**it, ctx);
+
+        declare_func(**it, ctx);
+
+        if ((*it)->body) {
+            resolve_function(**it, ctx);
+        }
     }
 
     exit_scope(ctx);
+}
+
+void resolver::resolve_function(const ast::function &function, context &ctx) {
+    in_fn_ = true;
+
+    for (auto it = function.body.value().body.body.begin(); it != function.body.value().body.body.end(); ++it) {
+        resolve_stmt(**it, ctx);
+    }
+
+    in_fn_ = false;
+}
+
+signature resolver::get_fn_signature(const ast::function &fn) const {
+    // use ranges here because i am too used to rust iterators and cant be 
+    // bothered to think of another way to do ts
+    std::vector<type> param_types = fn.params | std::views::transform([&](const auto &param) {
+        return resolve_type(param.type);
+    }) | std::ranges::to<std::vector>();
+
+    type return_type = resolve_type(fn.return_type);
+    return signature(return_type, std::move(param_types));
+}
+
+type resolver::resolve_type(const ast::type_syntax &type) const {
+    switch (type.type) {
+        case ast::type_syntax_type::int_:
+            return type::int_;    
+        case ast::type_syntax_type::bool_:
+            return type::bool_;
+    }
 }
 
 localid resolver::declare_var(std::string_view name, core::span span, context &ctx) {
@@ -29,10 +70,65 @@ localid resolver::declare_var(std::string_view name, core::span span, context &c
         return localid::error();
     }
 
+    // at file scope
+    if (ctx.scopes.back().variables.size() == 1) {
+        if (ctx.scopes.back().functions.contains(name)) {
+            error(std::format("redeclaration of identifer: {}", name), span, ctx);
+
+            return localid::error();
+        }
+    }
+
     localid id = current_local_id_;
     ctx.scopes.back().variables.emplace(name, id);
 
     ++current_local_id_;
+    return id;
+}
+
+std::optional<functionid> resolver::lookup_func(std::string_view name, context &ctx) {
+    for (auto it = ctx.scopes.rbegin(); it != ctx.scopes.rend(); ++it) {
+        for (auto [func_name, id] : it->functions) {
+            if (name == func_name) {
+                return id;
+            }
+        }
+    }
+
+    return std::nullopt;
+}
+
+functionid resolver::declare_func(const ast::function &fn, context &ctx) {
+    if (ctx.scopes.back().variables.contains(fn.name)) {
+        error(std::format("redeclaration of identifier: '{}'", fn.name), fn.span, ctx);
+        return functionid::error();
+    }
+
+    auto res = lookup_func(fn.name, ctx);
+    // if res is std::nullopt then we declare the function
+    if (!res) {
+        functionid id = current_function_id_;
+        ctx.scopes.back().functions.emplace(fn.name, id);
+        ++current_function_id_;
+        signature sig = get_fn_signature(fn);
+        function_info info(sig, static_cast<bool>(fn.body));
+        ctx.func_info.emplace(id, info);
+        ctx.functions.emplace(fn.id, id);
+        return id;
+    }
+
+    functionid id = *res;
+    function_info info = ctx.func_info.at(id);
+    signature sig = get_fn_signature(fn);
+    if (sig != info.sig) {
+        error(std::format("conflicting types for '{}'", fn.name), fn.span, ctx);
+        return functionid::error();
+    }
+    if (fn.body && info.defined) {
+        error(std::format("redefinition of '{}'", fn.name), fn.span, ctx);
+        return functionid::error();
+    }
+    ctx.functions.emplace(fn.id, id);
     return id;
 }
 
@@ -66,10 +162,20 @@ void resolver::resolve_stmt(const parser::stmt &stmt, context &ctx) {
         [&](const ast::exprstmt &exprstmt) {
             resolve_exprstmt(exprstmt, nodedata(stmt.id, stmt.span), ctx);
         },
+        [&](const ast::return_stmt &return_) {
+            resolve_return_stmt(return_, nodedata(stmt.id, stmt.span), ctx);
+        },
         [](std::monostate) {
             UNREACHABLE();
         }
     }, stmt.value);
+}
+
+void resolver::resolve_return_stmt(const parser::return_stmt&, nodedata data, context &ctx) {
+    if (!in_fn_) {
+        error("use of 'return' statement outside function", data.span, ctx);
+        return;
+    } 
 }
 
 void resolver::resolve_block(const parser::block &block, nodedata, context &ctx) {
@@ -113,10 +219,17 @@ void resolver::resolve_expr(const ast::expr &expr, context &ctx) {
         [&](const ast::literal &literal) {
             resolve_literal(literal, nodedata(expr.id, expr.span), ctx);
         },
+        [&](const ast::call &call) {
+            resolve_call(call, nodedata(expr.id, expr.span), ctx);
+        },
         [](std::monostate) {
             UNREACHABLE();
         }
     }, expr.value);
+}
+
+void resolver::resolve_call(const ast::call &call, nodedata data, context &ctx) {
+    
 }
 
 void resolver::resolve_literal(const ast::literal &, nodedata, context &) {

@@ -5,7 +5,12 @@ namespace cbb {
 namespace sema {
 
 localid &localid::operator++() {
-    value++;
+    ++value;
+    return *this;
+}
+
+functionid &functionid::operator++() {
+    ++value;
     return *this;
 }
 
