@@ -19,7 +19,7 @@ namespace sema {
 
 class type_checker {
 public:
-    type_checker() = default;
+    type_checker();
 
     void check(const parser::program &program, context &ctx);
 
@@ -47,10 +47,24 @@ private:
     std::optional<type> check_binary_type(parser::binaryop_type op, type lhs, type rhs) const;
     std::optional<type> check_unary_type(parser::unaryop_type op, type a) const;
 
+    // internal representation of all the things that we need to keep track of when type checking
+    // a function
+    struct function_context {
+        type return_type; 
+        functionid id;
+
+        constexpr function_context(type return_type, functionid id): return_type(return_type), id(id) {}
+    };
+
+    std::optional<function_context> function_context_;
+
+    void check_function(const parser::function &function, context &ctx);
+
     void check_stmt(const parser::stmt &stmt, context &ctx);
     void check_block(const parser::block &block, nodedata data, context &ctx);
     void check_exprstmt(const parser::exprstmt &exprstmt, nodedata data, context &ctx);
     void check_vardecl(const parser::var_decl &var_decl, nodedata data, context &ctx);
+    void check_return_stmt(const parser::return_stmt &return_stmt, nodedata data, context &ctx);
 
     type_info check_expr(const parser::expr &expr, context &ctx);
     type_info check_binary(const parser::binary &binary, nodedata data, context &ctx);
@@ -60,6 +74,7 @@ private:
     type_info check_unary(const parser::unary &unary, nodedata data, context &ctx);
     type_info check_variable(const parser::variable &variable, nodedata data, context &ctx);
     type_info check_var_assign(const parser::var_assign &var_assign, nodedata data, context &ctx);
+    type_info check_call(const parser::call &call, nodedata data, context &ctx);
 };
     
 } // namespace sema

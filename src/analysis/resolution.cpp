@@ -190,11 +190,15 @@ void resolver::resolve_stmt(const parser::stmt &stmt, context &ctx) {
     }, stmt.value);
 }
 
-void resolver::resolve_return_stmt(const parser::return_stmt&, nodedata data, context &ctx) {
+void resolver::resolve_return_stmt(const parser::return_stmt& return_stmt, nodedata data, context &ctx) {
     if (!in_fn_) {
         error("use of 'return' statement outside function", data.span, ctx);
         return;
     } 
+
+    if (return_stmt.value) {
+        resolve_expr(**return_stmt.value, ctx);
+    }
 }
 
 void resolver::resolve_block(const parser::block &block, nodedata, context &ctx) {

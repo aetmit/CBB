@@ -1,7 +1,10 @@
 #include "analysis/type_checker.hpp"
 
 #include <limits>
+#include <ranges>
 #include <sstream>
+
+#include <cassert>
 
 #include "core/overloaded.hpp"
 #include "core/error.hpp"
@@ -12,9 +15,19 @@ namespace sema {
 
 namespace ast = parser;
 
+type_checker::type_checker(): function_context_(std::nullopt) {}
+
 void type_checker::check(const ast::program &program, context &ctx) {
     for (auto it = program.body.begin(); it != program.body.end(); ++it) {
-        check_stmt(**it, ctx);
+        check_function(**it, ctx);
+    }
+}
+
+void type_checker::check_function(const ast::function &function, context &ctx) {
+    if (function.body) {
+        std::ranges::for_each(function.body.value().body.body, [&](const auto &stmt) {
+            check_stmt(*stmt, ctx);
+        });
     }
 }
 
@@ -29,10 +42,34 @@ void type_checker::check_stmt(const ast::stmt &stmt, context &ctx) {
         [&](const ast::var_decl &decl) {
             check_vardecl(decl, nodedata(stmt.id, stmt.span), ctx);
         },
+        [&](const ast::return_stmt &return_stmt) {
+            check_return_stmt(return_stmt, nodedata(stmt.id, stmt.span), ctx);
+        },
         [](std::monostate) {
             UNREACHABLE();
         }
     }, stmt.value);
+}
+
+void type_checker::check_return_stmt(const ast::return_stmt &return_stmt, nodedata data, context &ctx) {
+    if (return_stmt.value) {
+        type_info return_type = check_expr(**return_stmt.value, ctx);
+        
+        assert(function_context_.has_value());
+
+        function_context fn_ctx = function_context_.value();
+
+        if (return_type.type != fn_ctx.return_type) {
+            std::ostringstream oss;
+            oss << "returning '";
+            oss << return_type.type;
+            oss << "' from a function with incompatible result type '";
+            oss << fn_ctx.return_type;
+            oss << "'";
+            error(oss.str(), data.span, ctx);
+            return;
+        }
+    }
 }
 
 void type_checker::check_vardecl(const ast::var_decl &decl, nodedata data, context &ctx) {
@@ -126,6 +163,9 @@ type_info type_checker::check_expr(const ast::expr &expr, context &ctx) {
         [&](const ast::var_assign &var_assign) -> type_info {
             return check_var_assign(var_assign, nodedata(expr.id, expr.span), ctx);
         },
+        [&](const ast::call &call) -> type_info {
+            return check_call(call, nodedata(expr.id, expr.span), ctx);
+        },
         [](std::monostate) -> type_info {
             UNREACHABLE();
         }
@@ -134,6 +174,35 @@ type_info type_checker::check_expr(const ast::expr &expr, context &ctx) {
     ctx.types.emplace(expr.id, res);
 
     return res;
+}
+
+type_info type_checker::check_call(const ast::call &call, nodedata data, context &ctx) {
+    if (auto it = ctx.function_refs.find(call.callee->id); it != ctx.function_refs.end()) {
+        function_info info = ctx.func_info.at(it->second);
+
+        if (info.sig.param_types.size() > call.arguments.size()) {
+            error("too few arguments to a function call", data.span, ctx);
+            return type_info::error;
+        } else if (info.sig.param_types.size() < call.arguments.size()) {
+            error("too many arguments to a function call", data.span, ctx);
+            return type_info::error;
+        }
+
+        for (std::size_t i = 0; i < call.arguments.size(); ++i) {
+            type_info arg_type = check_expr(*call.arguments[i], ctx);
+
+            type param_type = info.sig.param_types[i];
+
+            if (!convertible(arg_type.type, param_type)) {
+                error("argument type mismatch", call.arguments[i]->span, ctx);
+            }
+        }
+
+        return type_info(info.sig.return_type, value_cat::rvalue);
+
+    } else {
+        error("attempt to use operator '()' on uncallable object", data.span, ctx);
+    }
 }
 
 type_info type_checker::check_var_assign(const ast::var_assign &var_assign, nodedata data, context &ctx) {
