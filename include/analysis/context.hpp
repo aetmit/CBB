@@ -29,7 +29,7 @@ struct context {
     std::unordered_map<functionid, function_info> func_info;
 
     std::unordered_map<parser::functionid, functionid> functions;
-    std::unordered_map<parser::nodeid, functionid> calls;
+    std::unordered_map<parser::nodeid, functionid> function_refs;
 };
     
 } // namespace sema

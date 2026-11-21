@@ -214,8 +214,9 @@ struct param {
     nodeid id;
     std::string_view name;
     type_syntax type;
+    core::span span;
 
-    param(nodeid id, std::string_view name, type_syntax type);
+    param(nodeid id, std::string_view name, type_syntax type, core::span span);
 };
 
 struct function {

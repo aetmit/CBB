@@ -168,6 +168,7 @@ std::expected<param, core::span> parser::parse_param() {
         return std::unexpected(span);
     }
 
+    core::span start_span = peek().span;
     type_syntax type = parse_type();
 
     if (peek().type != lexer::token_type::identifier) {
@@ -185,7 +186,7 @@ std::expected<param, core::span> parser::parse_param() {
 
     advance();
 
-    return param(next_nodeid(), identifier, type);
+    return param(next_nodeid(), identifier, type, start_span.join(identifer_span));
 }
 
 bool parser::is_typename(lexer::token_type type) const {

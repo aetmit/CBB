@@ -36,11 +36,27 @@ void resolver::resolve(const ast::program &program, context &ctx) {
 void resolver::resolve_function(const ast::function &function, context &ctx) {
     in_fn_ = true;
 
+    enter_scope(ctx);
+
+    declare_fn_params(function.params, ctx);
+
     for (auto it = function.body.value().body.body.begin(); it != function.body.value().body.body.end(); ++it) {
         resolve_stmt(**it, ctx);
     }
 
+    exit_scope(ctx);
+
     in_fn_ = false;
+}
+
+void resolver::declare_fn_params(const std::vector<ast::param> &params, context &ctx) {
+    // assume that a scope has been entered for us
+
+    // use ranges here because i cannot be bothered to type out another iterator for loop
+    // even tho this comment was prolly longer than that
+    std::ranges::for_each(params, [&](ast::param param){
+        declare_var(param.name, param.span, ctx);
+    });
 }
 
 signature resolver::get_fn_signature(const ast::function &fn) const {
@@ -71,7 +87,7 @@ localid resolver::declare_var(std::string_view name, core::span span, context &c
     }
 
     // at file scope
-    if (ctx.scopes.back().variables.size() == 1) {
+    if (ctx.scopes.size() == 1) {
         if (ctx.scopes.back().functions.contains(name)) {
             error(std::format("redeclaration of identifer: {}", name), span, ctx);
 
@@ -88,7 +104,7 @@ localid resolver::declare_var(std::string_view name, core::span span, context &c
 
 std::optional<functionid> resolver::lookup_func(std::string_view name, context &ctx) {
     for (auto it = ctx.scopes.rbegin(); it != ctx.scopes.rend(); ++it) {
-        for (auto [func_name, id] : it->functions) {
+        for (const auto& [func_name, id] : it->functions) {
             if (name == func_name) {
                 return id;
             }
@@ -124,9 +140,12 @@ functionid resolver::declare_func(const ast::function &fn, context &ctx) {
         error(std::format("conflicting types for '{}'", fn.name), fn.span, ctx);
         return functionid::error();
     }
-    if (fn.body && info.defined) {
-        error(std::format("redefinition of '{}'", fn.name), fn.span, ctx);
-        return functionid::error();
+    if (fn.body) {
+        if (info.defined) {
+            error(std::format("redefinition of '{}'", fn.name), fn.span, ctx);
+            return functionid::error();
+        }
+        ctx.func_info.at(id).defined = true;
     }
     ctx.functions.emplace(fn.id, id);
     return id;
@@ -134,7 +153,7 @@ functionid resolver::declare_func(const ast::function &fn, context &ctx) {
 
 std::optional<localid> resolver::lookup_var(std::string_view name, context &ctx) {
     for (auto it = ctx.scopes.rbegin(); it != ctx.scopes.rend(); ++it) {
-        for (auto [var_name, id] : it->variables) {
+        for (const auto& [var_name, id] : it->variables) {
             if (name == var_name) {
                 return id;
             } 
@@ -228,8 +247,11 @@ void resolver::resolve_expr(const ast::expr &expr, context &ctx) {
     }, expr.value);
 }
 
-void resolver::resolve_call(const ast::call &call, nodedata data, context &ctx) {
-    
+void resolver::resolve_call(const ast::call &call, nodedata, context &ctx) {
+    resolve_expr(*call.callee, ctx);
+    for (auto it = call.arguments.begin(); it != call.arguments.end(); ++it) {
+        resolve_expr(**it, ctx);
+    }
 }
 
 void resolver::resolve_literal(const ast::literal &, nodedata, context &) {
@@ -247,13 +269,21 @@ void resolver::resolve_binary(const ast::binary &binary, nodedata, context &ctx)
 }
 
 void resolver::resolve_variable(const ast::variable &variable, nodedata data, context &ctx) {
-    std::optional<localid> id = lookup_var(variable.name, ctx);
-
-    if (!id) {
-        error(std::format("use of undeclared identifier: '{}'", variable.name), data.span, ctx);
+    if (auto id = lookup_var(variable.name, ctx)) {
+        ctx.variables.emplace(data.id, *id);
+        return;
     }
 
-    ctx.variables.emplace(data.id, *id);
+    if (auto id = lookup_func(variable.name, ctx)) {
+        ctx.function_refs.emplace(data.id, *id);
+        return;
+    }
+
+    error(
+        std::format("use of undeclared identifier: '{}'", variable.name),
+        data.span,
+        ctx
+    );
 }
 
 void resolver::resolve_var_assign(const ast::var_assign &var_assign, nodedata, context &ctx) {

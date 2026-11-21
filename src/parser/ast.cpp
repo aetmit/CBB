@@ -78,8 +78,8 @@ var_assign::var_assign(expr *target, expr *value):
 function_block::function_block(nodeid id, core::span span, block block):
     id(id), span(span), body(std::move(block)) {}
 
-param::param(nodeid id, std::string_view name, type_syntax type):
-    id(id), name(name), type(type) {}
+param::param(nodeid id, std::string_view name, type_syntax type, core::span span):
+    id(id), name(name), type(type), span(span) {}
 
 stmt::stmt(nodeid id, core::span span, return_stmt return_stmt): 
     id(id), span(span), value(std::in_place_type<struct return_stmt>, return_stmt) {}

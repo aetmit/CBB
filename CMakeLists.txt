@@ -31,7 +31,6 @@ add_executable(cbb
     src/analysis/context.cpp
     src/analysis/type_checker.cpp
     src/analysis/type.cpp
-    src/analysis/declarations.cpp
     src/analysis/lowerer.cpp
     src/analysis/hir.cpp
 )

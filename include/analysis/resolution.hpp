@@ -52,6 +52,8 @@ private:
     signature get_fn_signature(const parser::function &fn) const;
     type resolve_type(const parser::type_syntax &type) const;
 
+    void declare_fn_params(const std::vector<parser::param> &params, context &ctx);
+
     struct nodedata {
         core::span span;
         parser::nodeid id;
