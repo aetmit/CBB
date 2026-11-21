@@ -26,6 +26,14 @@ void type_checker::check(const ast::program &program, context &ctx) {
 void type_checker::check_function(const ast::function &function, context &ctx) {
     if (function.body) {
         std::ranges::for_each(function.body.value().body.body, [&](const auto &stmt) {
+
+            std::ranges::for_each(function.params, [&](const auto &param) {
+                localid id = ctx.variables.at(param.id);
+                type param_type = get_annotation_type(param.type);
+
+                ctx.var_types.emplace(id, type_info(param_type, value_cat::lvalue));
+            });
+
             check_stmt(*stmt, ctx);
         });
     }
