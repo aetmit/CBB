@@ -24,6 +24,16 @@ std::ostream &operator<<(std::ostream &os, const localid &id) {
     return os;
 }
 
+std::ostream &operator<<(std::ostream &os, const functionid &id) {
+    if (id == functionid::error()) {
+        os << "<error>";
+    } else {
+        os << id.value;
+    }
+
+    return os;
+}
+
 std::ostream &operator<<(std::ostream &os, const hirid &id) {
     os << id.value;
 

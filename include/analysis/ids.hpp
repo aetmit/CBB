@@ -40,6 +40,8 @@ struct functionid {
     functionid &operator++();
 };
 
+std::ostream &operator<<(std::ostream &os, const functionid &id);
+
 std::ostream &operator<<(std::ostream &os, const localid &id);
 
 struct hirid {

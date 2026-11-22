@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <vector>
+#include <optional>
 #include <variant>
 
 #include "analysis/ids.hpp"
@@ -27,6 +28,12 @@ struct variable {
     localid id;
 
     explicit variable(localid id);
+};
+
+struct function_ref {
+    functionid id;
+
+    explicit function_ref(functionid id);
 };
 
 struct var_assign {
@@ -75,17 +82,26 @@ struct unary {
     unary(unarytype op, expr *operand);
 };
 
+struct call {
+    expr *callee;
+    std::vector<expr*> arguments;
+
+    call(expr *callee, std::vector<expr*> arguments);
+};
+
 struct expr {
     hirid id;
     type_info type;
 
-    std::variant<unary, binary, var_assign, variable, literal> value;   
+    std::variant<unary, binary, var_assign, variable, literal, call, function_ref> value;   
 
     expr(hirid id, type_info type, unary unary);
     expr(hirid id, type_info type, binary binary);
     expr(hirid id, type_info type, var_assign var_assign);
     expr(hirid id, type_info type, variable varialbe);
     expr(hirid id, type_info type, literal literal);
+    expr(hirid id, type_info type, call call);
+    expr(hirid id, type_info type, function_ref function_ref);
 };
 
 struct exprstmt {
@@ -108,15 +124,47 @@ struct var_decl {
     var_decl(localid id, type_info type, expr *initaliser);
 };
 
+struct return_stmt {
+    std::optional<expr*> value;
+
+    explicit return_stmt(std::optional<expr*> value);
+};
+
 struct stmt {
     hirid id;
 
-    std::variant<exprstmt, var_decl, block> value;
+    std::variant<exprstmt, var_decl, block, return_stmt> value;
 
     stmt(hirid id, exprstmt exprstmt);
     stmt(hirid id, var_decl var_decl);
     stmt(hirid id, block block);
+    stmt(hirid id, return_stmt return_stmt);
 
+};
+
+struct function_block {
+    hirid id;
+    block body;
+
+    function_block(hirid id, block block);
+};
+
+struct param {
+    // id of the actaul param node
+    hirid id;
+    // id of the actual variable
+    localid local_id;
+    type type;
+
+    param(hirid id, localid local_id, enum type type);
+};
+
+struct function {
+    functionid id;
+    type return_type;
+
+    std::optional<function_block> body;
+    std::vector<param> params;
 };
 
 struct program {
@@ -125,9 +173,9 @@ struct program {
     // with unique_ptr we can then sorta move the arena but the allocation stays the same
     // its just the pointer that gets moved
     std::unique_ptr<core::arena> arena;
-    std::vector<stmt*> body;
+    std::vector<function*> body;
 
-    program(std::unique_ptr<core::arena> arena, std::vector<stmt*> body);
+    program(std::unique_ptr<core::arena> arena, std::vector<function*> body);
 };
 
 class hir_formatter {
