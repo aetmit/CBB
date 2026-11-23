@@ -78,6 +78,8 @@ function *parser::parse_function() {
         return function;
     }
 
+    advance();
+
     std::vector<param> params;
     while (peek().type != lexer::token_type::eof && peek().type != lexer::token_type::close_paren) {
         auto res = parse_param();
@@ -622,6 +624,7 @@ expr *parser::parse_postfix() {
         lexer::token_type op_type = peek().type;
 
         if (op_type == lexer::token_type::open_paren) {
+            advance();
             std::vector<expr*> args;
             while (peek().type != lexer::token_type::close_paren) {
                 args.push_back(parse_expression());
@@ -750,6 +753,7 @@ void parser::sync() {
             case token_type::open_brace:
                 return;
             case token_type::close_brace:
+                advance();
                 return;
             default:
                 advance();

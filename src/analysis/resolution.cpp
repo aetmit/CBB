@@ -54,8 +54,9 @@ void resolver::declare_fn_params(const std::vector<ast::param> &params, context 
 
     // use ranges here because i cannot be bothered to type out another iterator for loop
     // even tho this comment was prolly longer than that
-    std::ranges::for_each(params, [&](ast::param param){
-        declare_var(param.name, param.span, ctx);
+    std::ranges::for_each(params, [&](const ast::param &param){
+        localid id = declare_var(param.name, param.span, ctx);
+        ctx.variables.emplace(param.id, id);
     });
 }
 
