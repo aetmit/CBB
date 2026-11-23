@@ -165,6 +165,8 @@ struct function {
 
     std::optional<function_block> body;
     std::vector<param> params;
+
+    function(functionid id, type return_type, std::optional<function_block> body, std::vector<param> params);
 };
 
 struct program {

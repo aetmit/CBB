@@ -210,6 +210,7 @@ type_info type_checker::check_call(const ast::call &call, nodedata data, context
 
     } else {
         error("attempt to use operator '()' on uncallable object", data.span, ctx);
+        return type_info::error;
     }
 }
 

@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <utility>
+#include <ranges>
 #include <vector>
 #include <variant>
 #include <optional>
@@ -23,17 +24,58 @@ lowerer::lowerer(): current_hirid_(0), arena_(nullptr) {}
 program lowerer::lower(const ast::program &program, context &ctx) {
 
     auto arena = std::make_unique<core::arena>();
-    std::vector<stmt*> body;
+    std::vector<function*> body;
 
     arena_ = &arena;
 
     for (auto it = program.body.begin(); it != program.body.end(); ++it) {
-        body.push_back(lower_stmt(**it, ctx));
+        body.push_back(lower_function(**it, ctx));
     }
 
     sema::program hir(std::move(arena), std::move(body));
 
     return hir;
+}
+
+function *lowerer::lower_function(const ast::function &function, context &ctx) {
+    functionid id = ctx.functions.at(function.id);
+    function_info info = ctx.func_info.at(id);
+
+    std::vector<param> params;
+
+    for (auto it = function.params.begin(); it != function.params.end(); ++it) {
+        hirid hir_id = next_hirid();
+        localid local_id = ctx.variables.at(it->id);
+        type type = ctx.var_types.at(local_id).type;
+        params.emplace_back(hir_id, local_id, type);
+    }    
+
+    if (!function.body) {
+        struct function *hir_function = alloc_function(id, info.sig.return_type, std::nullopt, std::move(params));
+        return hir_function;
+    }
+
+    struct function *hir_function = alloc_function(id, info.sig.return_type, lower_function_body(*function.body, ctx), std::move(params));
+    return hir_function;
+}
+
+function_block lowerer::lower_function_body(const ast::function_block &body, context &ctx) {
+    std::vector<stmt*> stmts;
+    for (auto it = body.body.body.begin(); it != body.body.body.end(); ++it) {
+        stmts.push_back(lower_stmt(**it, ctx));
+    } 
+    
+    block block(std::move(stmts));
+
+    return function_block(next_hirid(), block);
+}
+
+function *lowerer::alloc_function(functionid id, type return_type, std::optional<function_block> body, std::vector<param> params) {
+    void *memory = (*arena_)->allocate(sizeof(function), alignof(function));
+
+    function *function = new (memory) struct function(id, return_type, body, std::move(params));
+
+    return function;
 }
 
 stmt *lowerer::lower_stmt(const ast::stmt &stmt, context &ctx) {
@@ -47,12 +89,27 @@ stmt *lowerer::lower_stmt(const ast::stmt &stmt, context &ctx) {
         [&](const ast::var_decl &var_decl) -> sema::stmt* {
             return lower_var_decl(var_decl, stmt.id, ctx);
         },
+        [&](const ast::return_stmt &return_stmt) -> sema::stmt* {
+            return lower_return_stmt(return_stmt, ctx);
+        },
         [](std::monostate) -> sema::stmt* {
             UNREACHABLE();
         }
     }, stmt.value);     
 
     return hir_stmt;
+}
+
+stmt *lowerer::lower_return_stmt(const ast::return_stmt &return_stmt, context &ctx) {
+    if (return_stmt.value) {
+        expr *expr = lower_expr(**return_stmt.value, ctx);
+        struct return_stmt return_(expr);
+        stmt *stmt = alloc_stmt(return_);
+        return stmt;
+    }
+    struct return_stmt return_(std::nullopt);
+    stmt *stmt = alloc_stmt(return_);
+    return stmt;
 }
 
 stmt *lowerer::lower_var_decl(const ast::var_decl &var_decl, ast::nodeid nodeid, context &ctx) {
@@ -115,12 +172,29 @@ expr *lowerer::lower_expr(const ast::expr &expr, context &ctx) {
         [&](const ast::var_assign &var_assign) -> sema::expr* {
             return lower_var_assign(var_assign, expr.id, ctx);
         },
+        [&](const ast::call &call) -> sema::expr* {
+            return lower_call(call, expr.id, ctx);
+        },
         [](std::monostate) -> sema::expr* {
             UNREACHABLE();
         },
     }, expr.value);
 
     return hir_expr;
+}
+
+expr *lowerer::lower_call(const ast::call &call, ast::nodeid id, context &ctx) {
+    expr *callee = lower_expr(*call.callee, ctx);
+
+    std::vector<expr*> args = call.arguments | std::views::transform([&](const auto &arg) {
+        return lower_expr(*arg, ctx);
+    }) | std::ranges::to<std::vector>();
+
+    struct call call_expr(callee, args);
+    functionid ref = ctx.function_refs.at(id);
+    function_info info = ctx.func_info.at(ref);
+    expr *expr = alloc_expr(type_info(info.sig.return_type, value_cat::rvalue), call_expr);
+    return expr;
 }
 
 expr *lowerer::lower_var_assign(const ast::var_assign &var_assign, ast::nodeid id, context &ctx) {

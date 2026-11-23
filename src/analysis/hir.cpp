@@ -61,6 +61,9 @@ function_ref::function_ref(functionid id): id(id) {}
 
 param::param(hirid id, localid local_id, enum type type): id(id), local_id(local_id), type(type) {}
 
+function::function(functionid id, type return_type, std::optional<function_block> body, std::vector<param> params):
+    id(id), return_type(return_type), body(body), params(std::move(params)) {}
+
 void hir_formatter::format_expr(
     std::ostream& out,
     const expr* node,
@@ -149,10 +152,6 @@ void hir_formatter::format_expr(
     }, node->value);
 }
 
-// -----------------------------------------------------------------------------
-// Statement formatting
-// -----------------------------------------------------------------------------
-
 void hir_formatter::format_stmt(
     std::ostream& out,
     const stmt* node,
@@ -209,10 +208,6 @@ void hir_formatter::format_stmt(
     }, node->value);
 }
 
-// -----------------------------------------------------------------------------
-// Function formatting
-// -----------------------------------------------------------------------------
-
 std::string hir_formatter::format(const program& program) {
     std::ostringstream out;
 
@@ -259,6 +254,65 @@ std::string hir_formatter::format(const program& program) {
     return out.str();
 }
 
+void hir_formatter::indent(std::ostream& out, std::size_t depth) {
+    for (std::size_t i = 0; i < depth; ++i) {
+        out << "    ";
+    }
+}
+
+const char* hir_formatter::type_name(type t) {
+    switch (t) {
+        case type::bool_:
+            return "bool";
+        case type::int_:
+            return "int";
+        case type::error:
+            return "<error>";
+        default:
+            return "unknown";
+    }
+}
+
+const char* hir_formatter::value_cat_name(value_cat cat) {
+    switch (cat) {
+        case value_cat::invalid:
+            return "<invalid>";
+        case value_cat::lvalue:
+            return "lvalue";
+        case value_cat::rvalue:
+            return "rvalue";
+        default:
+            return "unknown";
+    }
+}
+
+const char* hir_formatter::binary_name(binarytype op) {
+    switch (op) {
+        case binarytype::add:         return "+";
+        case binarytype::sub:         return "-";
+        case binarytype::mul:         return "*";
+        case binarytype::div:         return "/";
+        case binarytype::logical_and: return "&&";
+        case binarytype::logical_or:  return "||";
+        case binarytype::equal:       return "==";
+        case binarytype::not_equal:   return "!=";
+        case binarytype::greater:     return ">";
+        case binarytype::greater_eq:  return ">=";
+        case binarytype::less:        return "<";
+        case binarytype::less_eq:     return "<=";
+    }
+
+    return "unknown";
+}
+
+const char* hir_formatter::unary_name(unarytype op) {
+    switch (op) {
+        case unarytype::negate:      return "-";
+        case unarytype::logical_not: return "!";
+    }
+
+    return "unknown";
+}
     
 } // namespace sema
 
