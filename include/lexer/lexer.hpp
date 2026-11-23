@@ -74,12 +74,14 @@ private:
         token_type type;
     };
 
-    static constexpr auto keywords_ = std::array<keyword, 5>{{
+    static constexpr auto keywords_ = std::array<keyword, 7>{{
         {"int", token_type::int_},
         {"false", token_type::false_},
         {"true", token_type::true_},
         {"bool", token_type::bool_},
         {"return", token_type::return_},
+        {"if", token_type::if_},
+        {"else", token_type::else_},
     }};
 
 

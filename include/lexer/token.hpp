@@ -43,6 +43,9 @@ enum class token_type {
 
     return_,
 
+    if_,
+    else_,
+
     comma,
 
     // _ postfix because we avoid conflict with the c++ keywords
