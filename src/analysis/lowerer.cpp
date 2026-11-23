@@ -183,7 +183,7 @@ expr *lowerer::lower_expr(const ast::expr &expr, context &ctx) {
     return hir_expr;
 }
 
-expr *lowerer::lower_call(const ast::call &call, ast::nodeid id, context &ctx) {
+expr *lowerer::lower_call(const ast::call &call, ast::nodeid, context &ctx) {
     expr *callee = lower_expr(*call.callee, ctx);
 
     std::vector<expr*> args = call.arguments | std::views::transform([&](const auto &arg) {
@@ -191,7 +191,7 @@ expr *lowerer::lower_call(const ast::call &call, ast::nodeid id, context &ctx) {
     }) | std::ranges::to<std::vector>();
 
     struct call call_expr(callee, args);
-    functionid ref = ctx.function_refs.at(id);
+    functionid ref = ctx.function_refs.at(call.callee->id);
     function_info info = ctx.func_info.at(ref);
     expr *expr = alloc_expr(type_info(info.sig.return_type, value_cat::rvalue), call_expr);
     return expr;

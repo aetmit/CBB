@@ -25,9 +25,7 @@ void resolver::resolve(const ast::program &program, context &ctx) {
 
         declare_func(**it, ctx);
 
-        if ((*it)->body) {
-            resolve_function(**it, ctx);
-        }
+        resolve_function(**it, ctx);
     }
 
     exit_scope(ctx);
@@ -40,8 +38,10 @@ void resolver::resolve_function(const ast::function &function, context &ctx) {
 
     declare_fn_params(function.params, ctx);
 
-    for (auto it = function.body.value().body.body.begin(); it != function.body.value().body.body.end(); ++it) {
-        resolve_stmt(**it, ctx);
+    if (function.body) {
+        for (auto it = function.body->body.body.begin(); it != function.body->body.body.end(); ++it) {
+            resolve_stmt(**it, ctx);
+        }
     }
 
     exit_scope(ctx);

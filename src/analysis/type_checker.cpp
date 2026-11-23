@@ -24,10 +24,6 @@ void type_checker::check(const ast::program &program, context &ctx) {
 }
 
 void type_checker::check_function(const ast::function &function, context &ctx) {
-    if (!function.body) {
-        return;
-    }
-
     function_context_ = function_context(
         get_annotation_type(function.return_type),
         ctx.functions.at(function.id)
@@ -40,8 +36,10 @@ void type_checker::check_function(const ast::function &function, context &ctx) {
         ctx.var_types.emplace(id, type_info(param_type, value_cat::lvalue));
     });
 
-    for (const auto *stmt : function.body->body.body) {
-        check_stmt(*stmt, ctx);
+    if (function.body) {
+        for (const auto *stmt : function.body->body.body) {
+            check_stmt(*stmt, ctx);
+        }
     }
 
     function_context_.reset();
