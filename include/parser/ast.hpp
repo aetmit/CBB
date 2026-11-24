@@ -201,12 +201,13 @@ struct stmt {
     nodeid id;
     core::span span;
 
-    std::variant<std::monostate, exprstmt, var_decl, block, return_stmt> value;
+    std::variant<std::monostate, exprstmt, var_decl, block, return_stmt, if_stmt> value;
 
     stmt(nodeid id, core::span span, exprstmt exprstmt);
     stmt(nodeid id, core::span span, var_decl var_decl);
     stmt(nodeid id, core::span span, block block);
     stmt(nodeid id, core::span span, return_stmt return_stmt);
+    stmt(nodeid id, core::span span, if_stmt if_stmt);
     stmt(nodeid id, core::span span);
 };
 
@@ -280,6 +281,7 @@ std::ostream &operator<<(std::ostream &os, const param &param);
 std::ostream &operator<<(std::ostream &os, const return_stmt &return_stmt);
 std::ostream &operator<<(std::ostream &os, const nodeid &id);
 std::ostream &operator<<(std::ostream &os, const call &call);
+std::ostream &operator<<(std::ostream &os, const if_stmt &if_stmt);
 
 class ast_formatter {
 public:

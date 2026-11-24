@@ -84,6 +84,9 @@ param::param(nodeid id, std::string_view name, type_syntax type, core::span span
 stmt::stmt(nodeid id, core::span span, return_stmt return_stmt): 
     id(id), span(span), value(std::in_place_type<struct return_stmt>, return_stmt) {}
 
+stmt::stmt(nodeid id, core::span span, if_stmt if_stmt):
+    id(id), span(span), value(std::in_place_type<struct if_stmt>, if_stmt) {}
+
 function::function(
     functionid id,
     core::span span,
