@@ -104,7 +104,7 @@ call::call(expr *callee, std::vector<expr*> arguments): callee(callee), argument
 function::function(functionid id, core::span span):
     id(id), span(span), body(std::nullopt) {}
 
-return_stmt::return_stmt(std::optional<expr*> value): value(value) {}
+return_stmt::return_stmt(expr* value): value(value) {}
 
 std::ostream &operator<<(std::ostream &os, const nodeid &id) {
     return os << id.value;
@@ -113,8 +113,8 @@ std::ostream &operator<<(std::ostream &os, const nodeid &id) {
 std::ostream &operator<<(std::ostream &os, const return_stmt &return_stmt) {
     os << "return";
 
-    if (return_stmt.value.has_value() && *return_stmt.value != nullptr) {
-        os << " " << **return_stmt.value;
+    if (return_stmt.value) {
+        os << " " << *return_stmt.value;
     }
 
     return os << ";";
@@ -633,11 +633,11 @@ void ast_formatter::format_statement(
 
             write_indent(os, indent + 1);
 
-            if (!value.value.has_value() || *value.value == nullptr) {
+            if (value.value == nullptr) {
                 os << "value: <none>\n";
             } else {
                 os << "value:\n";
-                format_expression(os, *value.value, indent + 2);
+                format_expression(os, value.value, indent + 2);
             }
         }
     }, statement->value);

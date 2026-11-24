@@ -102,7 +102,7 @@ stmt *lowerer::lower_stmt(const ast::stmt &stmt, context &ctx) {
 
 stmt *lowerer::lower_return_stmt(const ast::return_stmt &return_stmt, context &ctx) {
     if (return_stmt.value) {
-        expr *expr = lower_expr(**return_stmt.value, ctx);
+        expr *expr = lower_expr(*return_stmt.value, ctx);
         struct return_stmt return_(expr);
         stmt *stmt = alloc_stmt(return_);
         return stmt;

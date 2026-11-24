@@ -183,9 +183,18 @@ struct block {
 };
 
 struct return_stmt {
-    std::optional<expr*> value; 
+    expr* value; 
 
-    explicit return_stmt(std::optional<expr*> value);
+    explicit return_stmt(expr* value);
+};
+
+struct if_stmt {
+    expr *condition;
+    // stmt and not block because the if body doesn't need to be a block
+    stmt *body;
+
+    // nullptr if the else_clause doesn't exist
+    stmt *else_clause;
 };
 
 struct stmt {

@@ -198,7 +198,7 @@ void resolver::resolve_return_stmt(const parser::return_stmt& return_stmt, noded
     } 
 
     if (return_stmt.value) {
-        resolve_expr(**return_stmt.value, ctx);
+        resolve_expr(*return_stmt.value, ctx);
     }
 }
 

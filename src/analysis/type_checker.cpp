@@ -67,7 +67,7 @@ void type_checker::check_stmt(const ast::stmt &stmt, context &ctx) {
 
 void type_checker::check_return_stmt(const ast::return_stmt &return_stmt, nodedata data, context &ctx) {
     if (return_stmt.value) {
-        type_info return_type = check_expr(**return_stmt.value, ctx);
+        type_info return_type = check_expr(*return_stmt.value, ctx);
         
         assert(function_context_.has_value());
 

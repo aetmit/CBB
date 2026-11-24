@@ -234,7 +234,7 @@ stmt *parser::parse_return() {
 
     if (peek().type == lexer::token_type::semicolon) {
         core::span end_span = advance().span;
-        return_stmt return_(std::nullopt);
+        return_stmt return_(nullptr);
         stmt *stmt = alloc_stmt(start_span.join(end_span), return_);
         return stmt;
     } else if (is_expression_starter()) {
