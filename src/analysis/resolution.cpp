@@ -185,13 +185,26 @@ void resolver::resolve_stmt(const parser::stmt &stmt, context &ctx) {
         [&](const ast::return_stmt &return_) {
             resolve_return_stmt(return_, nodedata(stmt.id, stmt.span), ctx);
         },
+        [&](const ast::if_stmt &if_stmt) {
+            resolve_if_stmt(if_stmt, nodedata(stmt.id, stmt.span), ctx);
+        },
         [](std::monostate) {
             UNREACHABLE();
         }
     }, stmt.value);
 }
 
-void resolver::resolve_return_stmt(const parser::return_stmt& return_stmt, nodedata data, context &ctx) {
+void resolver::resolve_if_stmt(const ast::if_stmt &if_stmt, nodedata, context &ctx) {
+    resolve_expr(*if_stmt.condition, ctx);
+
+    resolve_stmt(*if_stmt.body, ctx);
+    
+    if (if_stmt.else_clause) {
+        resolve_stmt(*if_stmt.else_clause, ctx);
+    }
+}
+
+void resolver::resolve_return_stmt(const ast::return_stmt& return_stmt, nodedata data, context &ctx) {
     if (!in_fn_) {
         error("use of 'return' statement outside function", data.span, ctx);
         return;

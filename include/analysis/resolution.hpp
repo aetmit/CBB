@@ -67,6 +67,7 @@ private:
     void resolve_block(const parser::block &block, nodedata data, context &ctx);
     void resolve_exprstmt(const parser::exprstmt &exprstmt, nodedata data, context &ctx);
     void resolve_return_stmt(const parser::return_stmt &return_stmt, nodedata data, context &ctx);
+    void resolve_if_stmt(const parser::if_stmt &if_stmt, nodedata data, context &ctx);
 
     void resolve_expr(const parser::expr &expr, context &ctx);
     void resolve_literal(const parser::literal &literal, nodedata data, context &ctx);
