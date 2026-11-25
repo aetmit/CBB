@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "core/span.hpp"
-#include "core/concepts.hpp"
 #include "analysis/ids.hpp"
 #include "analysis/context.hpp"
 #include "analysis/function_info.hpp"
@@ -33,7 +32,6 @@ private:
     bool in_fn_;
 
     template <class T>
-    requires core::writable_to_stream<T>
     void error(T message, core::span span, context &ctx) {
         std::stringstream ss;
         ss << message;

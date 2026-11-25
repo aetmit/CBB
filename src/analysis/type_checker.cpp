@@ -59,10 +59,28 @@ void type_checker::check_stmt(const ast::stmt &stmt, context &ctx) {
         [&](const ast::return_stmt &return_stmt) {
             check_return_stmt(return_stmt, nodedata(stmt.id, stmt.span), ctx);
         },
+        [&](const ast::if_stmt &if_stmt) {
+            check_if_stmt(if_stmt, nodedata(stmt.id, stmt.span), ctx);
+        },
         [](std::monostate) {
             UNREACHABLE();
         }
     }, stmt.value);
+}
+
+void type_checker::check_if_stmt(const ast::if_stmt &if_stmt, nodedata, context &ctx) {
+    type cond_type = check_expr(*if_stmt.condition, ctx).type;
+
+    if (cond_type != type::error && cond_type != type::bool_) {
+        error("if statement condition must have type 'bool'", if_stmt.condition->span, ctx);
+        return;
+    }
+
+    check_stmt(*if_stmt.body, ctx);
+
+    if (if_stmt.else_clause) {
+        check_stmt(*if_stmt.else_clause, ctx);
+    }
 }
 
 void type_checker::check_return_stmt(const ast::return_stmt &return_stmt, nodedata data, context &ctx) {

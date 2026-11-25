@@ -6,7 +6,6 @@
 
 #include <cstdint>
 
-#include "core/concepts.hpp"
 #include "core/diagnostics.hpp"
 #include "core/span.hpp"
 #include "parser/ast.hpp"
@@ -26,7 +25,6 @@ public:
 private:
 
     template <class T>
-        requires core::writable_to_stream<T>
     void error(T message, core::span span, context ctx) {
         std::stringstream ss;
         ss << message;
@@ -65,6 +63,7 @@ private:
     void check_exprstmt(const parser::exprstmt &exprstmt, nodedata data, context &ctx);
     void check_vardecl(const parser::var_decl &var_decl, nodedata data, context &ctx);
     void check_return_stmt(const parser::return_stmt &return_stmt, nodedata data, context &ctx);
+    void check_if_stmt(const parser::if_stmt &if_stmt, nodedata data, context &ctx);
 
     type_info check_expr(const parser::expr &expr, context &ctx);
     type_info check_binary(const parser::binary &binary, nodedata data, context &ctx);
