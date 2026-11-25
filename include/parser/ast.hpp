@@ -195,6 +195,8 @@ struct if_stmt {
 
     // nullptr if the else_clause doesn't exist
     stmt *else_clause;
+
+    if_stmt(expr *condition, stmt *body, stmt *else_clause);
 };
 
 struct stmt {

@@ -216,6 +216,8 @@ stmt *parser::parse_statement() {
             return parse_block();
         case lexer::token_type::return_:
             return parse_return();
+        case lexer::token_type::if_:
+            return parse_if();
         default:
             core::span span = peek().span;
             std::stringstream ss;
@@ -229,6 +231,52 @@ stmt *parser::parse_statement() {
             return stmt;
     }
 }
+
+stmt *parser::parse_if() {
+    core::span start_span = advance().span;
+
+    if (peek().type != lexer::token_type::open_paren) {
+        core::span span = peek().span;
+        error("expected '('", span);
+        sync();
+        stmt *stmt = alloc_stmt(span);
+        return stmt;
+    }
+    advance();
+
+    expr *condition = parse_expression();
+    
+    if (peek().type != lexer::token_type::close_paren) {
+        core::span span = peek().span;
+        error("expected ')", span);
+        sync();
+        stmt *stmt = alloc_stmt(span);
+        return stmt;
+    }
+
+    advance();
+
+    stmt *body = parse_statement();
+
+    if (peek().type == lexer::token_type::else_) {
+        advance();
+        if (peek().type == lexer::token_type::if_) {
+            stmt *else_if = parse_if();
+            if_stmt if_stmt(condition, body, else_if);
+            stmt *stmt = alloc_stmt(start_span.join(else_if->span), if_stmt);
+            return stmt;
+        }
+        stmt *else_body = parse_statement();
+        if_stmt if_stmt(condition, body, else_body);
+        stmt *stmt = alloc_stmt(start_span.join(else_body->span), if_stmt);
+        return stmt;
+    } else {
+        if_stmt if_stmt(condition, body, nullptr);
+        stmt *stmt = alloc_stmt(start_span.join(body->span), if_stmt);
+        return stmt;
+    }
+}
+
 stmt *parser::parse_return() {
     core::span start_span = advance().span;
 

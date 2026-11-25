@@ -71,7 +71,6 @@ private:
     function *alloc_function(core::span span);
 
     template <class T>
-    requires core::writable_to_stream<T>
     void error(T msg, core::span span) {
         std::stringstream ss;
         ss << msg;
@@ -89,6 +88,7 @@ private:
     stmt *parse_vardecl();
     stmt *parse_block();
     stmt *parse_return();
+    stmt *parse_if();
     
     type_syntax parse_type();
     bool is_builtin_type(lexer::token_type type) const;

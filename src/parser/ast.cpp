@@ -70,6 +70,9 @@ exprstmt::exprstmt(struct expr *expr): expr(expr) {}
 
 block::block(std::vector<stmt*> body): body(std::move(body)) {}
 
+if_stmt::if_stmt(expr *condition, stmt *body, stmt *else_clause): condition(condition), body(body), else_clause(else_clause) {}
+
+
 variable::variable(std::string_view name): name(name) {}
 
 var_assign::var_assign(expr *target, expr *value):
