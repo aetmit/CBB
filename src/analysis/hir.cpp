@@ -19,6 +19,8 @@ stmt::stmt(hirid id, block block): id(id), value(std::in_place_type<struct block
 
 stmt::stmt(hirid id, return_stmt return_stmt): id(id), value(std::in_place_type<struct return_stmt>, std::move(return_stmt)) {}
 
+stmt::stmt(hirid id, if_stmt if_stmt): id(id), value(std::in_place_type<struct if_stmt>, std::move(if_stmt)) {}
+
 var_decl::var_decl(localid id, type_info type, expr *initaliser): id(id), type(type), initaliser(initaliser) {}
 
 block::block(std::vector<stmt*> body): body(std::move(body)) {}
@@ -42,6 +44,8 @@ expr::expr(hirid id, type_info type, function_ref ref): id(id), type(type), valu
 unary::unary(unarytype op, expr *operand): op(op), operand(operand) {}
 
 return_stmt::return_stmt(std::optional<expr*> value): value(value) {}
+
+if_stmt::if_stmt(expr *condition, stmt *body, stmt *else_clause): condition(condition), body(body), else_clause(else_clause) {}
 
 binary::binary(binarytype op, expr *left, expr *right): op(op), left(left), right(right) {}
 

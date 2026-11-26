@@ -92,12 +92,31 @@ stmt *lowerer::lower_stmt(const ast::stmt &stmt, context &ctx) {
         [&](const ast::return_stmt &return_stmt) -> sema::stmt* {
             return lower_return_stmt(return_stmt, ctx);
         },
+        [&](const ast::if_stmt &if_stmt) -> sema::stmt* {
+            return lower_if_stmt(if_stmt, ctx);
+        },
         [](std::monostate) -> sema::stmt* {
             UNREACHABLE();
         }
     }, stmt.value);     
 
     return hir_stmt;
+}
+
+stmt *lowerer::lower_if_stmt(const ast::if_stmt &if_stmt, context &ctx) {
+    expr *cond = lower_expr(*if_stmt.condition, ctx);
+
+    stmt *body = lower_stmt(*if_stmt.body, ctx);
+
+    if (if_stmt.else_clause) {
+        stmt *else_clause = lower_stmt(*if_stmt.else_clause, ctx);
+        struct if_stmt hir_if(cond, body, else_clause);
+        stmt *stmt = alloc_stmt(hir_if);
+        return stmt;
+    }
+    struct if_stmt hir_if(cond, body, nullptr);
+    stmt *stmt = alloc_stmt(hir_if);
+    return stmt;
 }
 
 stmt *lowerer::lower_return_stmt(const ast::return_stmt &return_stmt, context &ctx) {

@@ -33,6 +33,7 @@ private:
     stmt *lower_exprstmt(const parser::exprstmt &exprstmt, context &ctx);
     stmt *lower_var_decl(const parser::var_decl &var_decl, parser::nodeid nodeid, context &ctx);
     stmt *lower_return_stmt(const parser::return_stmt &return_stmt, context &ctx);
+    stmt *lower_if_stmt(const parser::if_stmt &if_stmt, context &ctx);
 
     expr *lower_expr(const parser::expr &expr, context &ctx);
     expr *lower_literal(const parser::literal &literal, parser::nodeid id, context &ctx);

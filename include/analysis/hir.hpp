@@ -130,16 +130,26 @@ struct return_stmt {
     explicit return_stmt(std::optional<expr*> value);
 };
 
+struct if_stmt {
+    expr *condition;
+    stmt *body;   
+
+    // nullptr if no else is present
+    stmt *else_clause;
+
+    if_stmt(expr *condition, stmt *body, stmt *else_clause);
+};
+
 struct stmt {
     hirid id;
 
-    std::variant<exprstmt, var_decl, block, return_stmt> value;
+    std::variant<exprstmt, var_decl, block, return_stmt, if_stmt> value;
 
     stmt(hirid id, exprstmt exprstmt);
     stmt(hirid id, var_decl var_decl);
     stmt(hirid id, block block);
     stmt(hirid id, return_stmt return_stmt);
-
+    stmt(hirid id, if_stmt if_stmt);
 };
 
 struct function_block {
