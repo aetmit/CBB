@@ -166,6 +166,30 @@ std::ostream &operator<<(std::ostream &os, const literal &literal) {
     }, literal.value);
 }
 
+std::ostream &operator<<(std::ostream &os, const if_stmt &if_stmt) {
+    os << "if (";
+
+    if (if_stmt.condition != nullptr) {
+        os << *if_stmt.condition;
+    } else {
+        os << "<null expression>";
+    }
+
+    os << ") ";
+
+    if (if_stmt.body != nullptr) {
+        os << *if_stmt.body;
+    } else {
+        os << "<null statement>";
+    }
+
+    if (if_stmt.else_clause != nullptr) {
+        os << " else " << *if_stmt.else_clause;
+    }
+
+    return os;
+}
+
 std::ostream &operator<<(std::ostream &os, const variable &variable) {
     return os << variable.name;
 }
@@ -644,6 +668,30 @@ void ast_formatter::format_statement(
             } else {
                 os << "value:\n";
                 format_expression(os, value.value, indent + 2);
+            }
+        } else if constexpr (std::is_same_v<T, if_stmt>) {
+            os << "IfStatement (id=" << statement->id << ")\n";
+
+            write_indent(os, indent + 1);
+            os << "span: ";
+            write_span(os, statement->span);
+            os << "\n";
+
+            write_indent(os, indent + 1);
+            os << "condition:\n";
+            format_expression(os, value.condition, indent + 2);
+
+            write_indent(os, indent + 1);
+            os << "body:\n";
+            format_statement(os, value.body, indent + 2);
+
+            write_indent(os, indent + 1);
+
+            if (value.else_clause == nullptr) {
+                os << "else_clause: <none>\n";
+            } else {
+                os << "else_clause:\n";
+                format_statement(os, value.else_clause, indent + 2);
             }
         }
     }, statement->value);
