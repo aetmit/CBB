@@ -208,6 +208,23 @@ void hir_formatter::format_stmt(
             if (value.value.has_value()) {
                 format_expr(out, *value.value, depth + 2);
             }
+        } else if constexpr (std::is_same_v<T, if_stmt>) {
+            indent(out, depth + 1);
+            out << "if\n";
+
+            indent(out, depth + 2);
+            out << "condition:\n";
+            format_expr(out, value.condition, depth + 3);
+
+            indent(out, depth + 2);
+            out << "body:\n";
+            format_stmt(out, value.body, depth + 3);
+
+            if (value.else_clause) {
+                indent(out, depth + 2);
+                out << "else:\n";
+                format_stmt(out, value.else_clause, depth + 3);
+            }
         }
     }, node->value);
 }
