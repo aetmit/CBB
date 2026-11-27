@@ -12,9 +12,6 @@
 #include "analysis/analysis.hpp"
 #include "analysis/hir.hpp"
 
-#include "core/std/utility.hpp"
-#include "core/std/type_traits.hpp"
-
 namespace cbb {
 
 int run(int argc, const char *argv[]) {
